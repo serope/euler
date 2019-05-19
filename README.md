@@ -1,5 +1,5 @@
 # euler_rpi
-These are some attempts at solving [Project Euler](https://projecteuler.net) puzzles on a Raspberry Pi (though they can be compiled on anything). They aren't elegant, fast, or well-organized, but they work, and their code is somewhat readable. Listed below are some example run times on a Pi 3 Model B when executed with the `time` command, with and without optimization.
+These are some attempts at solving [Project Euler](https://projecteuler.net) puzzles in C, written on a Raspberry Pi (though they can be compiled on anything). They aren't elegant or fast, but they work, and their code are somewhat organized. Listed below are some example run times on a Pi 3 Model B when executed with the `time` command, with and without optimization.
 
 ## Checklist
 
