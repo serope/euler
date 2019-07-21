@@ -1,0 +1,9 @@
+- Fix a memory leak in 35.c
+- Redo the commentation style in all C files
+- Improve solutions with long run times, such as:
+    30.c    26.795s
+    43.c    42.613s
+    44.c    1m27.282s
+    45.c    22.544s
+    47.c    26.606s
+    59.go   33.139s
