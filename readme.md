@@ -1,12 +1,12 @@
 # euler_rpi
-These are my Project Euler solutions written and timed on a Raspberry Pi 3B. The 3B is quite a weak machine, so run times are typically 5-10x longer than they would be on a typical desktop PC.
+These are my Project Euler solutions written and timed on a Raspberry Pi 3B. The 3B is quite a weak machine, so run times are roughly 5-10x longer than they would be on a typical desktop PC.
 
 1-57 are in C; the rest are in Go.
 
 
 ## Checklist
-&#35; | Problem | File | Compilation | User time (Pi 3B)
------ | --------| ---- | ----------- | -----------------
+&#35; | Problem | File | Compilation | User time
+----- | --------| ---- | ----------- | ---------
 1 | [Multiples of 3 and 5](https://projecteuler.net/problem=1) | [01.c](https://github.com/serope/euler_rpi/blob/master/c/01.c) | `gcc 01.c euler.c` | 0.001s
 2 | [Even Fibonacci numbers](https://projecteuler.net/problem=2) | [02.c](https://github.com/serope/euler_rpi/blob/master/c/02.c) | `gcc 02.c euler.c` | 0.003s
 3 | [Largest prime factor](https://projecteuler.net/problem=3) | [03.c](https://github.com/serope/euler_rpi/blob/master/c/03.c) | `gcc 03.c euler.c` | 0.560s
