@@ -4,94 +4,47 @@
  **********************************************************************/
 #include "euler.h"
 
-#define LIMIT          9999999
-#define POW_5(x)       x*x*x*x*x
-
-
 int main() {
-	int* set = NULL;
-	int set_len = 0;
+	//Make a list of every digit's 5th power
+	int* powers = (int*) calloc(10, sizeof(int));
+	for (int i=0; i<10; i++)
+		powers[i] = i*i*i*i*i;
 	
-	/*******************************************************************
-	 * 1. Find every number between 2 and the limit which is the sum
-	 *    of the 5th power of its digits
-	 ******************************************************************/
-	for (int x=2; x<LIMIT; x++) {
-		/***************************************************************
-		 * A. Prepare the set of x's digits
-		 **************************************************************/
-		int* digits = NULL;
-		int digits_len = 0;
+	//Make a list of every number that meets the problem's criteria
+	int* list = NULL;
+	int list_len = 0;
+	
+	//For every index from 2 to the limit...
+	int limit = 200000;
+	for (int i=2; i<limit; i++) {
+		//Get the digits of this index
+		int* digits = digits_of(i);
+		int digits_len = digit_count(i);
 		
-		
-		/***************************************************************
-		 * B. Get the digits
-		 **************************************************************/
-		int digit_column = (LIMIT+1)/10;
-		int current_digit;
-		
-		while (digit_column>0) {
-			/***********************************************************
-			 * a. Get the current digit
-			 **********************************************************/
-			current_digit = x/digit_column - 10*(x/(digit_column*10));
-			
-			
-			/***********************************************************
-			 * b. If the digit is NOT zero, add it to 'digits'
-			 **********************************************************/
-			if (current_digit!=0)
-				digits = append(digits, current_digit, &digits_len);
-			
-			
-			/***********************************************************
-			 * c. Proceed to the next digit column
-			 **********************************************************/
-			digit_column = digit_column/10;
-			
-		}
-		
-		
-		/***************************************************************
-		 * C. Sum the 5th power of each digit from step B
-		 **************************************************************/
+		//Sum the associated powers
 		int sum = 0;
-		for (int d=0; d<digits_len; d++)
-			sum += POW_5(digits[d]);
-			
+		for (int j=0; j<digits_len; j++)
+			sum += powers[digits[j]];
 		
-		
-		/***************************************************************
-		 * D. Put the sum in 'set' if it meets the problem's criteria
-		 **************************************************************/
-		if (sum==x) {
-			printf("%d \n", x);
-			set = append(set, x, &set_len);
+		//Append if it equals the original number
+		if (sum==i) {
+			printf("%d \n", sum);
+			list = append(list, i, &list_len);
 		}
 		
-		
-		/***************************************************************
-		 * E. Cleanup and continue
-		 **************************************************************/
+		//Free
 		free(digits);
 	}
 	
+	//Sum every member of the list
+	int sum = 0;
+	for (int i=0; i<list_len; i++)
+		sum += list[i];
 	
-	
-	/*******************************************************************
-	 * 2. Add the numbers that were gathered in step 1
-	 ******************************************************************/
-	int solution = 0;
-	
-	for (int x=0; x<set_len; x++)
-		solution += set[x];
-
-
-
-	/*******************************************************************
-	 * 3. Print, free memory, and exit
-	 ******************************************************************/
-	printf("solution: %d \n", solution);
-	free(set);
+	//End
+	printf("sum: %d \n", sum);
+	free(powers);
+	free(list);
 	return 0;
+	
 }

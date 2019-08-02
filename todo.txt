@@ -1,9 +1,12 @@
 - Fix a memory leak in 35.c
+- Redo 12.c
 - Redo the commentation style in all C files
 - Improve solutions with long run times, such as:
-    30.c    26.795s
-    43.c    42.613s
+    29.c    19.955s
+    30.c    26.795s	    done (0.279s)
+    43.c    42.613s         done (0.045s)
     44.c    1m27.282s
-    45.c    22.544s
+    45.c    22.544s         done (0.329s)
     47.c    26.606s
     59.go   33.139s
+    60.go   31.089s

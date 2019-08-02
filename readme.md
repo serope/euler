@@ -1,14 +1,7 @@
 # euler_rpi
-These are some Project Euler solutions written and timed on a Raspberry Pi.
+These are my Project Euler solutions written and timed on a Raspberry Pi 3B. The 3B is quite a weak machine, so run times are typically 5-10x longer than they would be on a typical desktop PC.
 
-### C
-Most nonmain functions are defined in the following files:
-* `euler.c` General-purpose functions for arrays, primes, pandigitals, etc.
-* `euler_bignum.c` Functions for bignum arithmetic
-* `euler_binary.c` Functions for binary sequences
-
-### Go
-Most nonmain functions are in `euler.go`. There isn't much else to say.
+1-57 are in C; the rest are in Go.
 
 
 ## Checklist
@@ -43,7 +36,7 @@ Most nonmain functions are in `euler.go`. There isn't much else to say.
 27 | [Quadratic primes](https://projecteuler.net/problem=27) | [27.c](https://github.com/serope/euler_rpi/blob/master/c/27.c) | `gcc 27.c euler.c` | 5.095s
 28 | [Number spiral diagonals](https://projecteuler.net/problem=28) | [28.c](https://github.com/serope/euler_rpi/blob/master/c/28.c) | `gcc 28.c` | 0.003s | 0.001s
 29 | [Distinct powers](https://projecteuler.net/problem=29) | [29.c](https://github.com/serope/euler_rpi/blob/master/c/29.c) | `gcc 29.c euler_bignum.c` | 19.955s
-30 | [Digit fifth powers](https://projecteuler.net/problem=30) | [30.c](https://github.com/serope/euler_rpi/blob/master/c/30.c) | `gcc 30.c euler.c` | 26.795s
+30 | [Digit fifth powers](https://projecteuler.net/problem=30) | [30.c](https://github.com/serope/euler_rpi/blob/master/c/30.c) | `gcc 30.c euler.c` | 0.279s
 31 | [Coin sums](https://projecteuler.net/problem=31) | [31.c](https://github.com/serope/euler_rpi/blob/master/c/31.c) | `gcc 31.c` | 0.455s
 32 | [Pandigital products](https://projecteuler.net/problem=32) | [32.c](https://github.com/serope/euler_rpi/blob/master/c/32.c) | `gcc 32.c euler.c` | 3.678s
 33 | [Digit cancelling fractions](https://projecteuler.net/problem=33) | [33.c](https://github.com/serope/euler_rpi/blob/master/c/33.c) | `gcc 33.c` | 0.013s
@@ -55,10 +48,10 @@ Most nonmain functions are in `euler.go`. There isn't much else to say.
 39 | [Integer right triangles](https://projecteuler.net/problem=39) | [39.c](https://github.com/serope/euler_rpi/blob/master/c/39.c) | `gcc 39.c euler.c` | 6.934s
 40 | [Champernowne's constant](https://projecteuler.net/problem=40) | [40.c](https://github.com/serope/euler_rpi/blob/master/c/40.c) | `gcc 40.c euler.c` | 0.221s
 41 | [Pandigital prime](https://projecteuler.net/problem=41) | [41.c](https://github.com/serope/euler_rpi/blob/master/c/41.c) | `gcc 41.c euler.c` | 4.759s
-42 | [Coded triangle numbers](https://projecteuler.net/problem=42) | [42.c](https://github.com/serope/euler_rpi/blob/master/c/42.c) | `gcc 42.c` | 0.008ss
-43 | [Sub-string divisibility](https://projecteuler.net/problem=43) | [43.c](https://github.com/serope/euler_rpi/blob/master/c/43.c) | `gcc 43.c euler.c` | 42.613s
+42 | [Coded triangle numbers](https://projecteuler.net/problem=42) | [42.c](https://github.com/serope/euler_rpi/blob/master/c/42.c) | `gcc 42.c` | 0.008s
+43 | [Sub-string divisibility](https://projecteuler.net/problem=43) | [43.c](https://github.com/serope/euler_rpi/blob/master/c/43.c) | `gcc 43.c` | 0.045s
 44 | [Pentagon numbers](https://projecteuler.net/problem=44) | [44.c](https://github.com/serope/euler_rpi/blob/master/c/44.c) | `gcc 44.c euler.c` | 1m27.282s :(
-45 | [Triangular, pentagonal, and hexagonal](https://projecteuler.net/problem=45) | [45.c](https://github.com/serope/euler_rpi/blob/master/c/45.c) | `gcc 45.c euler.c` | 22.544s
+45 | [Triangular, pentagonal, and hexagonal](https://projecteuler.net/problem=45) | [45.c](https://github.com/serope/euler_rpi/blob/master/c/45.c) | `gcc 45.c` | 0.329s
 46 | [Golbach's other conjecture](https://projecteuler.net/problem=46) | [46.c](https://github.com/serope/euler_rpi/blob/master/c/46.c) | `gcc 46.c euler.c -lm` | 0.179s
 47 | [Distinct primes factors](https://projecteuler.net/problem=47) | [47.c](https://github.com/serope/euler_rpi/blob/master/c/47.c) | `gcc 47.c euler.c` | 26.606s
 48 | [Self powers](https://projecteuler.net/problem=48) | [48.c](https://github.com/serope/euler_rpi/blob/master/c/48.c) | `gcc 48.c euler_bignum.c` | 6.759s
@@ -80,10 +73,12 @@ Most nonmain functions are in `euler.go`. There isn't much else to say.
 64 | [Odd period square roots](https://projecteuler.net/problem=64) | [64.go](https://github.com/serope/euler_rpi/blob/master/go/64.go) | `go build 64.go euler.go` | 0.079s
 65 | [Convergents of *e*](https://projecteuler.net/problem=65) | [65.go](https://github.com/serope/euler_rpi/blob/master/go/65.go) | `go build 65.go` | 0.009s
 66 | [Diophantine equation](https://projecteuler.net/problem=66) | [66.go](https://github.com/serope/euler_rpi/blob/master/go/66.go) | `go build 66.go euler.go` | 1.327s
+67 | [Maximum path sum II](https://projecteuler.net/problem=67) | | |
+68 | [Magic 5-gon ring](https://projecteuler.net/problem=68) | [68.go](https://github.com/serope/euler_rpi/blob/master/go/68.go) | `go build 68.go` | 3.300s
 
 ## Libraries
 None
 
-## Credits
+## Thanks
 * [Project Euler](https://projecteuler.net)
 * [Nayuki](https://github.com/nayuki/Project-Euler-solutions/blob/master/Answers.txt) for their ~~cheat~~ reference sheet
