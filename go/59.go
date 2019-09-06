@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"strings"
 	"strconv"
 	"io/ioutil"
@@ -20,7 +21,7 @@ func main() {
 		return
 	}
 	
-	//Separate by commas
+	//Split by commas
 	sep := strings.Split(string(file), ",")
 	
 	//Convert to integer slice
@@ -35,67 +36,88 @@ func main() {
 		}
 	}
 	
-	//Begin cipher
+	
+	/*
+	 * Generate a list of every cipher combination that can be formed
+	 * using three lowercase characters.
+	 * 
+	 * Every lowercase character has an 8-bit ASCII code.
+	 * Therefore, the list holds 3-element slices of 8-element booleans.
+	 * 
+	 * The total amount of combinations is 26^3 = 17576.
+	 */
+	combos := make([][][]bool, 17576)
+	index := 0
 	for i:='a'; i<='z'; i++ {
 		for j:='a'; j<='z'; j++ {
 			for k:='a'; k<='z'; k++ {
-				//Get binary sequences of current cipher combination
-				//e.g. 'a','b','c' -> 97,98,99 -> 1100001,1100010,01100011
-				ciphers := [][]bool {binarySeq(int(i)), binarySeq(int(j)), binarySeq(int(k))}
-				cipherIndex := 0
-				
-				//Declare slice for storing current attempt
-				var messageCiphered []byte
-				
-				//For each integer in the original message...
-				for _, integer := range(messageOrig) {
-					//Convert to a binary
-					binary := binarySeq(integer)
-					
-					//XOR the binary with the current cipher combo
-					xord := xor(binary, ciphers[cipherIndex])
-					
-					//Increment selected cipher
-					cipherIndex++
-					if cipherIndex==3 {
-						cipherIndex = 0
-					}
-					
-					//Convert back to integer (ASCII code)
-					ascii := binToInt(xord)
-					
-					//Append to messageCiphered
-					messageCiphered = append(messageCiphered, byte(ascii))
-				}
-				
-				//Check if the ciphered message contains common words
-				words := []string {"the ", "is ", "are "}
-				found := 0
-				for _, word := range(words) {
-					if strings.Contains(string(messageCiphered), word) {
-						found++
-					} else {
-						break
-					}
-				}
-				
-				//If so, print the ciphered message, and compute the
-				//sum of each ASCII value, as requested by the problem
-				if found==len(words) {
-					sum := 0
-					for _, ascii := range(messageCiphered) {
-						sum += int(ascii)
-					}
-					fmt.Printf("Cipher   %s%s%s \n", string(i), string(j), string(k))
-					fmt.Printf("Sum      %d \n", sum)
-					fmt.Printf("%s \n\n", string(messageCiphered))
-				}
+				combo := [][]bool {binarySeq(int(i)), binarySeq(int(j)), binarySeq(int(k))}
+				combos[index] = combo
+				index++
 			}
 		}
 	}
+	
+	//Solve the problem
+	var wait sync.WaitGroup
+	for _, combo := range(combos) {
+		wait.Add(1)
+		go solve(messageOrig, combo, &wait)
+	}
+	
+	//Wait for each goroutine to finish
+	wait.Wait()
 }
 
 
+
+
+func solve(messageOrig []int, combo [][]bool, wait *sync.WaitGroup) {
+	i := 0
+	var messageCiphered []byte
+	
+	for _, integer := range(messageOrig) {
+		//Convert to a binary
+		binary := binarySeq(integer)
+		
+		//XOR the binary with the current cipher combo
+		xord := xor(binary, combo[i])
+		
+		//Increment selected element of combo
+		i++
+		if i==3 {
+			i = 0
+		}
+		
+		//Convert back to integer (ASCII code)
+		ascii := binToInt(xord)
+		
+		//Append to messageCiphered
+		messageCiphered = append(messageCiphered, byte(ascii))
+	}
+	
+	//Check if the ciphered message contains common words
+	words := []string {"the ", "is ", "are "}
+	found := 0
+	for _, word := range(words) {
+		if strings.Contains(string(messageCiphered), word) {
+			found++
+		} else {
+			break
+		}
+	}
+	
+	//End
+	if found==len(words) {
+		sum := 0
+		for _, ascii := range(messageCiphered) {
+			sum += int(ascii)
+		}
+		fmt.Println(string(messageCiphered))
+		fmt.Println("Sum: ", sum)
+	}
+	wait.Done()
+}
 
 
 
