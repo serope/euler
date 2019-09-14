@@ -2,6 +2,7 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 27
  **********************************************************************/
+#include <stdio.h>
 #include "euler.h"
 
 #define FORMULA(a, b, n)      n*n + a*n + b

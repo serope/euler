@@ -2,6 +2,7 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 25
  **********************************************************************/
+#include <stdio.h>
 #include "euler_bignum.h"
 
 int main() {

@@ -2,7 +2,10 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 35
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
+
 #define TOTAL_ROTATIONS(x)	digit_count(x)
 
 int main() {
@@ -22,26 +25,23 @@ int main() {
 	 *          satisfy the problem's requirement
 	 ******************************************************************/
 	for (int p=5; p<primes_len; p++) {
-		/***********************************************************
-		 * 2a. Get the digits of this prime
-		 **********************************************************/
+		//Get digits
 		int* digits = digits_of(primes[p]);
 		int len = digit_count(primes[p]);
 		
-		
-		/***********************************************************
-		 * 2b. If it contains 2, 4, 5, 6, 8, or 0, remove it from
-			  the list
-		 **********************************************************/
+		/*
+		 * If it contains 2, 4, 5, 6, 8, or 0, remove it from
+		 * the list
+		 */
 		for (int d=0; d<len; d++) {
 			int digit = digits[d];
 			
-			if 	(digit==2 || digit==4 || digit==5 || 
-				 digit==6 || digit==8 || digit==0) {
+			if 	(digit==2 || digit==4 || digit==5 || digit==6 || digit==8 || digit==0) {
 				primes[p] = 0;
 				break;
 			}
 		}
+		free(digits);
 	}
 	
 	
@@ -53,31 +53,19 @@ int main() {
 	
 	for (int p=0; p<primes_len; p++) {
 		if (primes[p]>0) {
-			/***********************************************************
-			 * 3a. Determine how many rotations the current prime has
-			 **********************************************************/
+			//Count how many rotations this prime has
 			int prime = primes[p];
 			int total_rotations = TOTAL_ROTATIONS(prime);
 			
-			
-			/***********************************************************
-			 * 3b. Get the list of its rotations
-			 **********************************************************/
+			//Get rotations
 			int* rotations = rotations_of(prime);
 			
-			
-			
-			/***********************************************************
-			 * DEBUG: Print the current prime's rotations
-			 **********************************************************/
+			//DEBUG: Print rotations
 			//printf("%d: \t", prime);
 			//for (int r=0; r<total_rotations; r++)
 				//printf("%d ", rotations[r]);
 			
-			
-			/***********************************************************
-			 * 3c. If every rotation is prime, add 1 to the total
-			 **********************************************************/
+			//f every rotation is prime, add 1 to the total
 			bool every_rotation_is_prime = true;
 			
 			for (int r=0; r<total_rotations; r++)
@@ -104,7 +92,7 @@ int main() {
 	
 	
 	/*******************************************************************
-	 * 4. Print, cleanup, and exit
+	 * 4. End
 	 ******************************************************************/
 	printf("primes_len                  %d \n", primes_len);
 	printf("total_circular_primes       %d \n", total_circular_primes);

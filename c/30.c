@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 30
  **********************************************************************/
+#include <stdlib.h>
+#include <stdio.h>
 #include "euler.h"
 
 int main() {

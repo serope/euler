@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 51
  **********************************************************************/
+#include <stdlib.h>
+#include <stdio.h>
 #include "euler.h"
 #include "euler_binary.h"
 

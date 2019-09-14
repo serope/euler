@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 47
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
 
 int main() {
@@ -9,7 +11,7 @@ int main() {
 	 * 1. Prepare a list of numbers (500k is sufficient)
 	 ******************************************************************/
 	int limit = 500000;
-	int* numbers = calloc(limit, sizeof(int));
+	int* numbers = (int*) calloc(limit, sizeof(int));
 	
 	for (int n=0; n<limit; n++)
 		numbers[n] = n+1;
@@ -86,25 +88,19 @@ int main() {
 	int answer;
 	
 	for (int i=1; i<consec_nonprimes_len; i++) {
-		/***************************************************************
-		 * 4a. Get the next two terms on the list
-		 **************************************************************/
+		//Get the next two terms on the list
 		int n = consec_nonprimes[i];
 		int last_n = consec_nonprimes[i-1];
 		
 		
-		/***************************************************************
-		 * 4b. If they aren't consecutive, skip them
-		 **************************************************************/
+		//If they aren't consecutive, skip
 		if (n != last_n+1) {
 			consecutive = 0;
 			continue;
 		}
 		
 		
-		/***************************************************************
-		 * 4c. Count the DPFs; increment if it's 4
-		 **************************************************************/
+		//Count the DPFs; increment if it's 4
 		int dpf_count = distinct_prime_factor_count(n,
 													primes,
 													primes_len);
@@ -123,10 +119,10 @@ int main() {
 		}
 		
 		
-		/***************************************************************
-		 * 4d. If the past 4 terms were consecutive and had 4 DPFs,
-		 *     save the answer and break
-		 **************************************************************/
+		/*
+		 * If the past 4 terms were consecutive and had 4 DPFs,
+		 * save the answer and break
+		 */
 		if (consecutive==goal) {
 			answer = n-(goal-1);
 			break;
@@ -135,7 +131,7 @@ int main() {
 	
 	
 	/*******************************************************************
-	 * 5. Print, cleanup, and exit
+	 * 5. End
 	 ******************************************************************/
 	printf("limit                  %d \n", limit);
 	printf("primes                 %p \n", primes);

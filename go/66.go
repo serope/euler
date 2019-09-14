@@ -12,14 +12,15 @@ import (
 
 
 func main() {
-	/* Prepare a map of solutions where each key is a value of D and
+	/* 
+	 * Prepare a map of solutions where each key is a value of D and
 	 * each value is the smallest x in the solution, e.g. from the
 	 * problem text: solutions[13] = 649
 	 */
 	solutions := make(map[int]*big.Int, 0)
 	limit := 1000
 	
-	//Find each solution from D=1 to the D=limit
+	//Find each solution from D=1 to the limit
 	for i:=1; i<=limit; i++ {
 		//Ignore perfect squares
 		if isSquare(i) {

@@ -24,7 +24,7 @@ int* append(int* set, int x, int* len_ptr) {
 	return set;
 }
 
-int smallest_item_in_set(int* set, int len) {
+int min(int* set, int len) {
 	if (len==0)
 		return 0;
 	
@@ -58,7 +58,7 @@ int64_t* append_int64(int64_t* set, int64_t x, int* len_ptr) {
 
 
 
-int64_t smallest_item_in_set_int64(int64_t* set, int len) {
+int64_t min_int64(int64_t* set, int len) {
 	int64_t x = set[0];
 	
 	for (int i=0; i<len; i++)
@@ -460,7 +460,7 @@ int64_t* odd_factors_of(int64_t x) {
 	 ******************************************************************/
 	int64_t factor = 3;
 	
-	while (factor < smallest_item_in_set_int64(upper, upper_len)) {
+	while (factor < min_int64(upper, upper_len)) {
 		if (IS_DIVISIBLE(x, factor)) {
 			lower = append_int64(lower, factor, &lower_len);
 			
@@ -555,7 +555,7 @@ int odd_factor_count(int64_t x) {
 	 ******************************************************************/
 	int64_t factor = 3;
 	
-	while (factor < smallest_item_in_set_int64(upper, upper_len)) {
+	while (factor < min_int64(upper, upper_len)) {
 		if (IS_DIVISIBLE(x, factor)) {
 			lower = append_int64(lower, factor, &lower_len);
 			
@@ -633,7 +633,7 @@ int* factors_of(int x) {
 	 ******************************************************************/
 	int factor = 2;
 	
-	while (factor<smallest_item_in_set(upper, upper_len)) {
+	while (factor<min(upper, upper_len)) {
 		if (IS_DIVISIBLE(x, factor)) {
 			lower = append(lower, factor, &lower_len);
 			
@@ -703,7 +703,7 @@ int factor_count(int x) {
 	 ******************************************************************/
 	int factor = 2;
 	
-	while (factor<smallest_item_in_set(upper, upper_len)) {
+	while (factor<min(upper, upper_len)) {
 		if (IS_DIVISIBLE(x, factor)) {
 			lower = append(lower, factor, &lower_len);
 			
@@ -779,7 +779,7 @@ int proper_divisor_count(int x) {
 	 ******************************************************************/
 	int factor = 2;
 	
-	while (factor<smallest_item_in_set(upper, upper_len)) {
+	while (factor<min(upper, upper_len)) {
 		if (IS_DIVISIBLE(x, factor)) {
 			lower = append(lower, factor, &lower_len);
 			
@@ -852,7 +852,7 @@ int* proper_divisors_of(int x) {
 	 ******************************************************************/
 	int factor = 2;
 	
-	while (factor<smallest_item_in_set(upper, upper_len)) {
+	while (factor<min(upper, upper_len)) {
 		if (IS_DIVISIBLE(x, factor)) {
 			lower = append(lower, factor, &lower_len);
 			
@@ -1176,139 +1176,6 @@ bool is_equal_array(int* set1, int len1, int* set2, int len2) {
 	
 	return true;
 }
-
-
-
-
-/* Problem-specific property functions */
-bool has_problem5_property(int x) {
-	//'x' is always divisible by 20, 10, 5, 4, 2, and 1
-	//Divisibility by 19
-	if (NOT_DIVISIBLE(x,19))
-		return false;
-	
-	//Divisibility by 18 (and thus 2, 3, 6, and 9)
-	if (NOT_DIVISIBLE(x,18))
-		return false;
-	
-	//Divisibility by 17
-	if (NOT_DIVISIBLE(x,17))
-		return false;
-	
-	//Divisibility by 16 (and thus 2, 4, and 8)
-	if (NOT_DIVISIBLE(x,16))
-		return false;
-	
-	//Divisibility by 14 (and thus 7)
-	if (NOT_DIVISIBLE(x,14))
-		return false;
-	
-	//Divisibility by 13
-	if (NOT_DIVISIBLE(x,13))
-		return false;
-	
-	//Divisibility by 11
-	if (NOT_DIVISIBLE(x,11))
-		return false;
-	
-	return true;
-}
-
-
-
-bool has_problem32_property(int* x) {
-	//This should be rewritten to perform in a loop
-	//Note: c is always 4 digits long
-	//First product
-	int a = x[0];
-	int b = 1000*x[1] + 100*x[2] + 10*x[3] + x[4];
-	int c = 1000*x[5] + 100*x[6] + 10*x[7] + x[8];
-	if (a*b==c)
-		return true;
-	
-	//Second product
-	a = 10*x[0] + x[1];
-	b = 100*x[2] + 10*x[3] + x[4];
-	if (a*b==c)
-		return true;
-	
-	//Third product
-	a = 100*x[0] + 10*x[1] + x[2];
-	b = 10*x[3] + x[4];
-	if (a*b==c)
-		return true;
-	
-	return false;
-}
-
-
-
-
-bool has_problem43_property(int* sequence) {
-	int a = 100*sequence[1] + 10*sequence[2] + sequence[3];
-	if (NOT_DIVISIBLE(a, 2))
-		return false;
-	
-	int b = 100*sequence[2] + 10*sequence[3] + sequence[4];
-	if (NOT_DIVISIBLE(b, 3))
-		return false;
-		
-	int c = 100*sequence[3] + 10*sequence[4] + sequence[5];
-	if (NOT_DIVISIBLE(c, 5))
-		return false;
-	
-	int d = 100*sequence[4] + 10*sequence[5] + sequence[6];
-	if (NOT_DIVISIBLE(d, 7))
-		return false;
-		
-	int e = 100*sequence[5] + 10*sequence[6] + sequence[7];
-	if (NOT_DIVISIBLE(e, 11))
-		return false;
-		
-	int f = 100*sequence[6] + 10*sequence[7] + sequence[8];
-	if (NOT_DIVISIBLE(f, 13))
-		return false;
-		
-	int g = 100*sequence[7] + 10*sequence[8] + sequence[9];
-	if (NOT_DIVISIBLE(g, 17))
-		return false;
-
-	return true;
-}
-
-
-
-
-
-
-
-
-bool has_problem49_property(int x, int y) {
-	//They must not be equal
-	if (x==y)
-		return false;
-		
-	//They must have 4 digits
-	if (x<1000 || x>9999 || y<1000 || y>9999)
-		return false;
-	
-	//They must be permutations of one another
-	if (!is_permutation(x, y))
-		return false;
-		
-	//They must have a distance which is divisible by 3330
-	int distance = x-y;
-	if (IS_NEGATIVE(distance))
-		distance *= -1;
-	
-	if (NOT_DIVISIBLE(distance, 3330))
-		return false;
-
-	return true;
-}
-
-
-
 
 
 

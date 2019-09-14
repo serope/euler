@@ -2,7 +2,10 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 54
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
+
 #define IS_RANK(x)	x>=1 && x<=14
 #define IS_SUIT(x)	x==CLUBS || x==DIAMONDS || x==HEARTS || x==SPADES
 

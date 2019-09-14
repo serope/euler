@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 24
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
 
 #define _            -1        //Represents an unknown member of a set
@@ -15,17 +17,10 @@ int main() {
 	int solution[SIZE]				= {_, _, _, _, _, _, _, _, _, _};
 	int solution_len 				= 0;
 	int total_possible_permutations = factorial(SIZE);
-	
-	
 	int range_size = total_possible_permutations/SIZE;
 	int range_marker = 0;
 	
-	
-	/*******************************************************************
-	 * Repeatedly perform the method described in 24_explanation.txt
-	 * until the length of solution set equals the length of the
-	 * original pool
-	 ******************************************************************/
+	//Perform the pandigital generation method described on the web page
 	while (1) {
 		/***************************************************************
 		 * 1. Find which row is correct

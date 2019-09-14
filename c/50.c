@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 50
  **********************************************************************/
+#include <stdlib.h>
+#include <stdio.h>
 #include "euler.h"
 #define IS_PRIME(x) contains(primes, x, primes_len)
 

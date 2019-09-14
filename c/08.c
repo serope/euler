@@ -2,13 +2,15 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 8
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
 
 int main() {
 	/*******************************************************************
 	 * 1. Load the text file
 	 ******************************************************************/
-	const char* filename = "08_big_number.txt";
+	const char* filename = "08_bignum.txt";
 	FILE* txtfile = fopen(filename, "r");
 	if (!txtfile) {
 		printf("Unable to load %s \n", filename);

@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 14
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
 
 int	collatz_sequence_len(int starting_number, int* list, int list_len);

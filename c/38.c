@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 38
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 #include "euler.h"
 #define _ 0
 

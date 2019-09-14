@@ -2,6 +2,8 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 40
  **********************************************************************/
+#include <stdlib.h>
+#include <stdio.h>
 #include "euler.h"
 
 int main() {
@@ -10,7 +12,7 @@ int main() {
 	 *    part of Champernowne's constant to 1 million digits
 	 ******************************************************************/
 	int len = 1000000;
-	int* champernowne = calloc(len, sizeof(int));
+	int* champernowne = (int*) calloc(len, sizeof(int));
 
 
 	/*******************************************************************
@@ -21,24 +23,17 @@ int main() {
 	int index = 0;
 	
 	while (index <= len) {
-		/***************************************************************
-		 * 2a. Get the digits of x
-		 **************************************************************/
+		//Get digits
 		int* digits = digits_of(x);
 		int digits_len = digit_count(x);
 		
-		
-		/***************************************************************
-		 * 2b. Add each digit to the array
-		 **************************************************************/
+		//Add to array
 		for (int d=0; d<digits_len; d++) {
 			champernowne[index] = digits[d];
 			index++;
 		}
 		
-		/***************************************************************
-		 * 2c. Free memory and increment x
-		 **************************************************************/
+		//Free and increment
 		free(digits);
 		x++;
 	}

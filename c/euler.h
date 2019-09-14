@@ -14,8 +14,8 @@
 //Array functions
 int*		append(int* set, int x, int* len_ptr);
 int64_t*	append_int64(int64_t* set, int64_t x, int* len_ptr);
-int			smallest_item_in_set(int* set, int len);
-int64_t		smallest_item_in_set_int64(int64_t* set, int len);
+int			min(int* set, int len);
+int64_t		min_int64(int64_t* set, int len);
 bool		contains(int* set, int target, int len);
 bool		contains_int64(int64_t* set, int64_t target, int len);
 void		print_set(int* set, int len);
@@ -56,7 +56,7 @@ int			total_truncated_stages(int x);
 int*		nth_permutation_of_pandigital(int n, int length);
 void		print_pandigital(int* pandigital, int len);
 
-//Property functions (general)
+//Property functions
 bool		is_prime(int x);
 bool		is_prime_int64(int64_t x);
 bool		is_palindromic_int(int x);
@@ -67,11 +67,6 @@ bool		is_pandigital_1_to_9(int64_t x);
 bool		is_permutation(int x, int y);
 bool		is_equal_array(int* set1, int len1, int* set2, int len2);
 
-//Property functions (problem-specific)
-bool		has_problem5_property(int x);
-bool		has_problem32_property(int* x);
-bool		has_problem43_property(int* sequence);
-bool		has_problem49_property(int x, int y);
 
 //Macro functions
 #define		IS_EVEN(x)			x%2==0

@@ -1,8 +1,8 @@
-- Fix a memory leak in 35.c
-- Redo 12.c
-- Redo the commentation style in all C files
-- Clean up #include directives in all C files
-- Create a script which generates a timed checklist in README formatting
+- Fix a memory leak in 35.c (done)
+- Rewrite 12.c (done)
+- Redo the commentation style in all C files (done)
+- Clean up #include directives in all C files (done)
+- Create a script which generates a timed checklist in README formatting (done)
 - Improve solutions with long run times, such as:
     29.c	20.184s
     30.c	26.795s		done (0.283s)

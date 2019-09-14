@@ -2,7 +2,11 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 49
  **********************************************************************/
+#include <stdlib.h>
+#include <stdio.h>
 #include "euler.h"
+
+bool has_problem49_property(int x, int y);
 
 int main() {
 	/*******************************************************************
@@ -41,7 +45,6 @@ int main() {
 				continue;
 			
 			if (has_problem49_property(term1, term2)) {
-				
 				//Find the 3rd term
 				for (int k=j+1; k<list_len; k++) {
 					int term3 = list[k];
@@ -69,3 +72,31 @@ int main() {
 	free(list);
 	return 0;
 }
+
+
+
+
+bool has_problem49_property(int x, int y) {
+	//They must not be equal
+	if (x==y)
+		return false;
+		
+	//They must have 4 digits
+	if (x<1000 || x>9999 || y<1000 || y>9999)
+		return false;
+	
+	//They must be permutations of one another
+	if (!is_permutation(x, y))
+		return false;
+		
+	//They must have a distance which is divisible by 3330
+	int distance = x-y;
+	if (IS_NEGATIVE(distance))
+		distance *= -1;
+	
+	if (NOT_DIVISIBLE(distance, 3330))
+		return false;
+
+	return true;
+}
+

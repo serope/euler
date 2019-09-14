@@ -2,6 +2,9 @@
  * Project Euler (https://serope.com/github/euler.html)
  * Problem 21
  **********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "euler.h"
 #define D(x) sum_of_proper_divisors_of(x)
 
