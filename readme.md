@@ -6,11 +6,11 @@ The languages used are C (1-57) and Go (58+).
 ## Compilation
 Solutions can be compiled via the `compile.py` script, e.g.
 
-'''bash
+```bash
 pi@raspberrypi:~ $ python compile.py 23
 23:	gcc 23.c euler.c -o 23
 pi@raspberrypi:~ $
-'''
+```
 
 To generate the list below, run `compile.py all` and then `checklist.py`.
 
@@ -87,7 +87,7 @@ To generate the list below, run `compile.py all` and then `checklist.py`.
 68 | [Magic 5-gon ring](https://projecteuler.net/problem=68) | [68.go](https://github.com/serope/euler_rpi/blob/master/go/68.go) | 5.976s | 6.143s | 0.050s
 
 
-This list was generated on '2019 Sep 13 (Fri) @ 21:16'!
+This list was generated on `2019 Sep 13 (Fri) @ 21:16`!
 
 ## Libraries
 None
