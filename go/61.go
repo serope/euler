@@ -8,10 +8,10 @@ import "fmt"
 
 func main() {
 	//Find all 4-digit triangles
-	var masterList []uint
-	var triangles []uint
-	var n uint = 1
-	var num uint = 0
+	var masterList []int
+	var triangles []int
+	n := 1
+	num := 0
 	for (num <= 9999) {
 		num = nthTriangularNum(n)
 		if (is4Digits(num)) {
@@ -25,7 +25,7 @@ func main() {
 	}
 	
 	//Find all 4-digit squares
-	var squares []uint
+	var squares []int
 	n = 1
 	num = 0
 	for (num <= 9999) {
@@ -41,7 +41,7 @@ func main() {
 	}
 	
 	//Find all 4-digit pentagons
-	var pentagons []uint
+	var pentagons []int
 	n = 1
 	num = 0
 	for (num <= 9999) {
@@ -58,7 +58,7 @@ func main() {
 	
 	
 	//Find all 4-digit hexagons
-	var hexagons []uint
+	var hexagons []int
 	n = 1
 	num = 0
 	for (num <= 9999) {
@@ -74,7 +74,7 @@ func main() {
 	}
 	
 	//Find all 4-digit heptagons
-	var heptagons []uint
+	var heptagons []int
 	n = 1
 	num = 0
 	for (num <= 9999) {
@@ -90,7 +90,7 @@ func main() {
 	}
 	
 	//Find all 4-digit octagons
-	var octagons []uint
+	var octagons []int
 	n = 1
 	num = 0
 	for (num <= 9999) {
@@ -107,27 +107,27 @@ func main() {
 
 	
 	/* 
-	 * From the master list, remove all items whose third digit is 0
+	 * From the master list, cross out all items whose third digit is 0
 	 * 
 	 * This reduces the list size by removing items which can't form
 	 * cycles with other members
 	 */
-	index := 0
-	for index<len(masterList) {
-		digits := digitsOf(masterList[index])
+	for i, x := range(masterList) {
+		digits := digitsOf(x)
 		if digits[2]==0 {
-			masterList = append(masterList[:index], masterList[index+1:]...)
-			index = 0
-		} else {
-			index++
+			masterList[i] = -1
 		}
 	}
 	
 	
 	//Solve the problem!
-	var solutions [][]uint
+	var solutions [][]int
 	for _, x := range(masterList) {
-		solution := []uint {x}
+		if x==-1 {
+			continue
+		}
+		
+		solution := []int {x}
 		i := 0
 		
 		for i<len(masterList) {
@@ -206,7 +206,7 @@ func main() {
  * 
  * Returns true if target is in set
  */
-func linearSearch(set []uint, target uint) bool {
+func linearSearch(set []int, target int) bool {
 	for _, x := range(set) {
 		if x==target {
 			return true
@@ -220,7 +220,7 @@ func linearSearch(set []uint, target uint) bool {
  * 
  * Returns true if x's last 2 digits are y's first 2 digits
  */
-func hasCycle(x, y uint) bool {
+func hasCycle(x, y int) bool {
 	digitsx := digitsOf(x)
 	digitsy := digitsOf(y)
 	if digitsx[2]==digitsy[0] && digitsx[3]==digitsy[1] {
@@ -229,30 +229,30 @@ func hasCycle(x, y uint) bool {
 	return false
 }
 
-func is4Digits(x uint) bool {
+func is4Digits(x int) bool {
 	return (x>=1000 && x<=9999)
 }
 
-func nthTriangularNum(n uint) uint {
+func nthTriangularNum(n int) int {
 	return (n*(n+1))/2
 }
 
-func nthSquareNum(n uint) uint {
+func nthSquareNum(n int) int {
 	return n*n
 }
 
-func nthPentagonalNum(n uint) uint {
+func nthPentagonalNum(n int) int {
 	return (n*(3*n-1))/2
 }
 
-func nthHexagonalNum(n uint) uint {
+func nthHexagonalNum(n int) int {
 	return n*(2*n-1)
 }
 
-func nthHeptagonalNum(n uint) uint {
+func nthHeptagonalNum(n int) int {
 	return (n*(5*n-3))/2
 }
 
-func nthOctagonalNum(n uint) uint {
+func nthOctagonalNum(n int) int {
 	return n*(3*n-2)
 }

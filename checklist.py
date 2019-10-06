@@ -70,8 +70,7 @@ def main(args):
 	
 	#End
 	date = time.strftime('%Y %b %d (%a) @ %H:%M')
-	bye = 'This list was generated on \'' + date + '\'!'
-	print(bye)
+	print('`' + date + '`')
 	return 0
 
 

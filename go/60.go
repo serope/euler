@@ -20,33 +20,33 @@ func main() {
 	primes = append(primes[:1], primes[2:]...)
 	
 	//Solve the problem
-	var set []uint
+	var set []int
 	for i:=0; i<len(primes); i++ {
 		a := primes[i]
 		
 		for j:=i+1; j<len(primes)-1; j++ {
 			b := primes[j]
-			if !hasProblem60Property([]uint {a}, primes, b) {
+			if !hasProblem60Property([]int {a}, primes, b) {
 				continue
 			}
 			
 			for k:=j+1; k<len(primes)-2; k++ {
 				c := primes[k]
-				if !hasProblem60Property([]uint {a, b}, primes, c) {
+				if !hasProblem60Property([]int {a, b}, primes, c) {
 					continue
 				}
 
 				
 				for l:=k+1; l<len(primes)-3; l++ {
 					d := primes[l]
-					if !hasProblem60Property([]uint {a, b, c}, primes, d) {
+					if !hasProblem60Property([]int {a, b, c}, primes, d) {
 						continue
 					}
 
 					
 					for m:=l+1; m<len(primes)-4; m++ {
 						e := primes[m]
-						if !hasProblem60Property([]uint {a, b, c, d}, primes, e) {
+						if !hasProblem60Property([]int {a, b, c, d}, primes, e) {
 							continue
 						}
 						
@@ -70,9 +70,11 @@ func main() {
  * Concatenates y with every x in set
  * If both xy and yx are prime, returns true
  */
-func hasProblem60Property(set, primes []uint, y uint) bool {
+func hasProblem60Property(set, primes []int, y int) bool {
 	for _, x := range(set) {
-		if isPrime(concatenate(x, y), primes) && isPrime(concatenate(y, x), primes) {
+		xy := concatenate(x, y)
+		yx := concatenate(y, x)
+		if isPrime(xy, primes) && isPrime(yx, primes) {
 			continue
 		} else {
 			return false
@@ -84,7 +86,7 @@ func hasProblem60Property(set, primes []uint, y uint) bool {
 
 
 
-func isPrime(x uint, primes []uint) bool {
+func isPrime(x int, primes []int) bool {
 	//Get largest prime in 'primes'
 	largest := primes[len(primes)-1]
 	

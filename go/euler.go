@@ -10,16 +10,14 @@ import "math"
  * 
  * Returns a slice of primes from 2 to the limit
  */
-func eratosthenes(limit uint) []uint {
-	var numbers []uint
-	var primes []uint
-	var i uint
+func eratosthenes(limit int) []int {
+	var numbers, primes []int
 	
-	for i=0; i<limit; i++ {
+	for i:=0; i<limit; i++ {
 		numbers = append(numbers, i+1)
 	}
 	
-	for i=1; i<limit; i++ {
+	for i:=1; i<limit; i++ {
 		if numbers[i]>0 {
 			primes = append(primes, numbers[i])
 			
@@ -40,45 +38,48 @@ func eratosthenes(limit uint) []uint {
 
 
 /*
- * Returns a slice of x's digits
- * e.g. digitsOf(207) -> {2, 0, 7}
+ * digitsOf()
+ * 
+ * Returns a slice of x's digits, e.g. digitsOf(207) -> {2, 0, 7}
  */
-func digitsOf(x uint) []uint {
-	//If 'x' is one digit
-	if (x<=9) {
-		return []uint{x}
+func digitsOf(x int) []int {
+	if x<=9 {
+		return []int{x}
 	}
 	
-	//Find the largest power of 10 which is smaller than 'x'
-	var column uint = 10
-	for (column*10 < x) {
-		column *= 10
+	pow := 10
+	for pow*10 < x {
+		pow *= 10
 	}
 	
-	//Find every digit of 'x'
-	var digits []uint
-	for (column > 0) {
-		current := x/column - 10*(x/(column*10))
-		digits = append(digits, current)
-		column /= 10
+	var digits []int
+	for pow > 0 {
+		digits = append(digits, x/pow)
+		x = x%pow
+		pow = pow/10
 	}
 
 	return digits
 }
 
 
+
+
+
 /*
+ * digitLen()
+ * 
  * Returns the amount of digits in n
  */
-func digitLen(n uint) uint {
+func digitLen(n int) int {
 	if n<=9 {
 		return 1
 	}
 	
-	var len uint = 2
-	var column uint = 10
-	for (column*10 < n) {
-		column *= 10
+	len := 2
+	pow := 10
+	for pow*10 < n {
+		pow *= 10
 		len++
 	}
 	
@@ -90,11 +91,11 @@ func digitLen(n uint) uint {
 
 
 /*
- * Performs a binary search for target in set
- * The set must be sorted!
+ * contains()
+ * 
+ * Performs a binary search on a sorted slice
  */
-func contains(set []uint, target uint) bool {
-	//Return if the slice is empty
+func contains(set []int, target int) bool {
 	if (set==nil || len(set)==0) {
 		return false
 	}
@@ -104,12 +105,12 @@ func contains(set []uint, target uint) bool {
 	right := len(set)-1
 	halfway := len(set)/2
 	
-	//Return true if the target is the first or last item
+	//If first or last item
 	if (set[left]==target || set[right]==target) {
 		return true
 	}
 	
-	//Return false if the target is out of range
+	//If out of range
 	if (target < set[left] || target > set[right]) {
 		return false
 	}
@@ -131,7 +132,7 @@ func contains(set []uint, target uint) bool {
 		}
 	}
 	
-	//If the loop terminated, then the target wasn't found
+	//Item wasn't found
 	return false
 }
 
@@ -139,8 +140,9 @@ func contains(set []uint, target uint) bool {
 
 
 /*
- * Returns the binary form of x
- * e.g. intToBin(5) -> {true, false, true}
+ * binarySeq()
+ * 
+ * Returns the binary form of x, e.g. intToBin(5) -> {true, false, true}
  */
 func binarySeq(x int) []bool {
 	//Find the length of the sequence
@@ -180,7 +182,9 @@ func binarySeq(x int) []bool {
 
 
 /*
- * Converts a binary sequence into an int
+ * bintoInt()
+ * 
+ * Reverts a binary sequence returned by intToBin() back to an integer
  */
 func binToInt(seq []bool) int {
 	index := len(seq)-1
@@ -202,6 +206,8 @@ func binToInt(seq []bool) int {
 
 
 /*
+ * intPow()
+ * 
  * Returns base^exp
  */
 func intPow(base, exp int) int {
@@ -222,19 +228,22 @@ func intPow(base, exp int) int {
 
 
 /*
- * Returns the concatenation of two integers
+ * concatenate()
+ * 
+ * Returns the concatenation of two positive integers
  * e.g. concatenate(25,0) -> 250
  */
-func concatenate(x, y uint) uint {
-	//Case: 'x' is zero or 'y' is one digit
+func concatenate(x, y int) int {
 	if x==0 {
 		return y
 	} else if y<=9 {
 		return x*10 + y
+	} else if x<0 || y<0 {
+		return 0
 	}
 	
 	//Find 'm', the smallest multiple of 10 such that m>y
-	var m uint = 10
+	m := 10
 	for m<y {
 		m *= 10
 	}
@@ -244,11 +253,13 @@ func concatenate(x, y uint) uint {
 
 
 
+
+
 /*
- * Returns the sum of the given slice
+ * sum()
  */
-func sum(set []uint) uint {
-	var sum uint = 0
+func sum(set []int) int {
+	var sum int = 0
 	for _, x := range(set) {
 		sum += x
 	}
@@ -262,9 +273,7 @@ func sum(set []uint) uint {
 
 
 /*
- * Returns whether x is a perfect square
- * e.g. isSquare(4) -> true
- *      isSquare(7) -> false
+ * isSquare()
  */
 func isSquare(x int) bool {
 	a := math.Sqrt(float64(x))
@@ -279,11 +288,13 @@ func isSquare(x int) bool {
 
 
 /*
+ * getContinuedFraction()
+ * 
  * Returns the continued fraction sequence of 's' using the algorithm
  * on this page:
  * https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Continued_fraction_expansion
  */
-func continuedFraction(s int) []int {
+func getContinuedFraction(s int) []int {
 	//Return nil if 's' is a perfect square
 	if isSquare(s) {
 		return nil
@@ -330,13 +341,15 @@ func continuedFraction(s int) []int {
 
 
 /*
+ * getContinuedFractionSlow()
+ * 
  * Returns the first 'max' terms of the continued fraction sequence of
  * 's' using the algorithm on this page:
  * https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Continued_fraction_expansion
  * 
  * (this was used in 64.go before a faster version was written)
  */
-func continuedFractionSlow(s, max int) []int {
+func getContinuedFractionSlow(s, max int) []int {
 	//Return nil if 's' is a perfect square
 	if isSquare(s) {
 		return nil
@@ -381,15 +394,17 @@ func continuedFractionSlow(s, max int) []int {
 
 
 /*
+ * repeatingTerm()
+ * 
  * Checks a set of ints and returns a set which is the longest
  * repeating subset.
  * 
  * Note: The distance between each poisition must be 0, otherwise it
- *       fails in cases like continuedFractionSlow(137) = 
+ *       fails in cases like getContinuedFractionSlow(137) = 
  *       {1 2 2 1 1 2 2 1 22 1 2 2 1 1 2 2 1 22 1 2 2 1 1 2 2 ...}
  * 
- * (this was used in 64.go before continuedFractionSlow() was replaced
- *  with a faster version)
+ * (this was used in 64.go before getContinuedFractionSlow() was
+ *  replaced with a faster version)
  */
 func repeatingTerm(sequence []int) []int {
 	//If every term is the same
@@ -427,6 +442,8 @@ func repeatingTerm(sequence []int) []int {
 
 
 /*
+ * positions()
+ * 
  * Returns a list of indexes at which the subsequence appears in the
  * sequence
  */
@@ -457,6 +474,8 @@ func positions(sequence, subsequence []int) []int {
 
 
 /*
+ * allSame()
+ * 
  * Returns whether or not every item in 'set' is the same
  */
 func allSame(set []int) bool {

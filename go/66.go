@@ -17,10 +17,9 @@ func main() {
 	 * each value is the smallest x in the solution, e.g. from the
 	 * problem text: solutions[13] = 649
 	 */
-	solutions := make(map[int]*big.Int, 0)
+	solutions := make(map[int]*big.Int)
 	limit := 1000
 	
-	//Find each solution from D=1 to the limit
 	for i:=1; i<=limit; i++ {
 		//Ignore perfect squares
 		if isSquare(i) {
@@ -32,8 +31,10 @@ func main() {
 		n := 1
 		x, y := nthConvergent(d, n)
 		
-		//Continue generating the Nth convergent of D until the
-		//convergent satisfies the Diophantine equation
+		/*
+		 * Continue generating the Nth convergent of D until the
+		 * convergent satisfies the equation
+		 */
 		for isDiophantineSolution(d, x, y)==false {
 			n++
 			x, y = nthConvergent(d, n)
@@ -43,8 +44,6 @@ func main() {
 		solutions[i] = x
 	}
 	
-	fmt.Println(solutions)
-	
 	//Find D which holds largest x
 	largest := 2
 	for d, x := range(solutions) {
@@ -53,7 +52,7 @@ func main() {
 		}
 	}
 	
-	//Print
+	//End
 	fmt.Printf("D=%d \n", largest)
 	fmt.Printf("x=%d \n", solutions[largest])
 }
@@ -61,6 +60,8 @@ func main() {
 
 
 /*
+ * isDiophantineSolution()
+ * 
  * Returns whether the given d, x, and y satisfy the following
  * Diophantine equation: x^2 - D * y^2 = 1
  */
@@ -85,6 +86,8 @@ func isDiophantineSolution(d, x, y *big.Int) bool {
 
 
 /*
+ * bigContinuedFraction()
+ * 
  * Returns the first 'n' terms in the continued fraction sequence of
  * the big.Int 's'
  * 
@@ -144,6 +147,8 @@ func bigContinuedFraction(s *big.Int, n int) []*big.Int {
 
 
 /*
+ * bigIsSquare()
+ * 
  * Returns whether 'a' is a perfect square
  */
 func bigIsSquare(a *big.Int) bool {
@@ -158,6 +163,8 @@ func bigIsSquare(a *big.Int) bool {
 
 
 /*
+ * nthConvergent()
+ * 
  * Returns a fraction (in the form of two big.Ints; top and bottom)
  * which represents the Nth convergent of x
  */

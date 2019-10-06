@@ -12,7 +12,7 @@ func main() {
 	
 	for i:=1; i<=n; i++ {
 		//Generate continued fraction sequence of 'i'
-		seq := continuedFraction(i)
+		seq := getContinuedFraction(i)
 		
 		//Above func returns nil if 'i' is a perfect square
 		if seq==nil {
