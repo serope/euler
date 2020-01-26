@@ -1,46 +1,67 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 27
- **********************************************************************/
+/*
+ * Project Euler
+ * 27.c
+ */
+#include <stdlib.h>
 #include <stdio.h>
-#include "euler.h"
+#include <stdbool.h>
+#include "array.h"
+#include "prime.h"
 
-#define FORMULA(a, b, n)      n*n + a*n + b
+
+#define formula(a, b, n) n*n + a*n + b
+bool may_be_prime(int x);
+
 
 int main() {
-	int most_consecutive_primes = 0;
-	int product = 0;
+	// sieve (1000 is sufficient for this problem)
+	int primes_len;
+	int* primes = eratosthenes(1000, &primes_len);
 	
-	
-	/*******************************************************************
-	* 'a' goes from -999 to 999
-	* 'b' goes from -1000 to 1000
-	* 'n' goes from 0 to infinity
-	* 
-	* Plug every possible value for 'a' and 'b' into the formula
-	* 
-	* After 'a' and 'b' have been established, keep plugging in
-	* increasing values of 'n' until the result is a non-prime number
-	******************************************************************/
-	for (int a=-999; a<999+1; a++) {
-		for (int b=-1000; b<1000+1; b++) {
-			
-			int consecutive_primes = 0;
+	/*
+	 * Plug every possible value for a and b into the formula
+	 * 
+	 * 'a' goes from -999 to 999
+	 * 'b' goes from -1000 to 1000
+	 * 'n' goes from 0 to infinity
+	 * 
+	 * After a and b have been established, keep plugging in increasing
+	 * values of n until the result is a nonprime
+	 */
+	int most_consec = 0;
+	for (int a=-999; a < 1000; a++) {
+		for (int b=-1000; b <= 1000; b++) {
 			int n = 0;
-			
-			while (is_prime(FORMULA(a, b, n))) {
-				consecutive_primes += 1;
-				n += 1;
+			int f = formula(a, b, n);
+			while (may_be_prime(f)) {
+				f = formula(a, b, n);
+				if (arr_bsearch(primes, primes_len, f))
+					n++;
+				else
+					break;
 			}
-			
-			
-			if (consecutive_primes > most_consecutive_primes) {
-				most_consecutive_primes = consecutive_primes;
-				product = a*b;
-				printf("consecutive_primes      %d \n", consecutive_primes);
-				printf("a, b                    %d, %d \n", a, b);
-				printf("product                 %d \n\n", product);
+			if (n > most_consec) {
+				most_consec = n;
+				printf("a, b, n             %d, %d, %d \n", a, b, n);
+				printf("formula(a, b, c)    %d \n", formula(a,b,n));
+				printf("a*b                 %d \n\n", a*b);
 			}
 		}
 	}
+	
+	// end
+	free(primes);
+	return 0;
+}
+
+
+/**
+ * Returns true if x has a possibility of being prime, i.e. it's a
+ * positive odd number.
+ * 
+ * @param	x	the term to check
+ * @return		true or false
+ */
+bool may_be_prime(int x) {
+	return (x>0 && x%2!=0);
 }

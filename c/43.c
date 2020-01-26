@@ -1,42 +1,37 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 43
- **********************************************************************/
+/*
+ * Project Euler
+ * 43.c
+ * TODO: Rewrite this using dynamic programming
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "array.h"
+#include "euler.h"
+#include "pandigital.h"
 
-int* digits_of(int x);
-int** make_problem43_list(int divisor, int* list_len);
-void free_problem43_list(int** list, int list_len);
 
-bool contains(int* set, int set_len, int x);
-bool has_repeating_elements(int* set , int set_len);
-bool shares_element(int* list1, int list1_len, int* list2, int list2_len);
-
+int** new_problem43_list(int divisor, int* len_ptr);
+int* prepend_zero(int* arr);
+bool has_problem43_match(int* seq1, int* seq2);
+bool has_repeats(int* set , int set_len);
+bool has_common_element(int* arr1, int len1, int* arr2, int len2);
 
 
 int main() {
 	/*
-	 * Generate lists of 3-digit sequences whose integer forms are
+	 * Generate arrays of 3-digit sequences whose integer forms are
 	 * divisible by 2, 3, 5, etc.
 	 */
-	int list2_len = 0;
-	int list3_len = 0;
-	int list5_len = 0;
-	int list7_len = 0;
-	int list11_len = 0;
-	int list13_len = 0;
-	int list17_len = 0;
-	
-	int** list2		= make_problem43_list(2, &list2_len);
-	int** list3		= make_problem43_list(3, &list3_len);
-	int** list5		= make_problem43_list(5, &list5_len);
-	int** list7		= make_problem43_list(7, &list7_len);
-	int** list11	= make_problem43_list(11, &list11_len);
-	int** list13	= make_problem43_list(13, &list13_len);
-	int** list17	= make_problem43_list(17, &list17_len);
+	int len2, len3, len5, len7, len11, len13, len17;
+	int** list2		= new_problem43_list(2, &len2);
+	int** list3		= new_problem43_list(3, &len3);
+	int** list5		= new_problem43_list(5, &len5);
+	int** list7		= new_problem43_list(7, &len7);
+	int** list11	= new_problem43_list(11, &len11);
+	int** list13	= new_problem43_list(13, &len13);
+	int** list17	= new_problem43_list(17, &len17);
 	
 	/*
 	 * Try combining every term from every list into a pandigital
@@ -45,44 +40,39 @@ int main() {
 	 * If the combination is a valid pandigital, add its integer form
 	 * to the sum.
 	 */
+	int lists_len = 7;
 	int64_t sum = 0;
-	for (int i2=0; i2<list2_len; i2++) {
+	for (int i2=0; i2<len2; i2++) {
 		int* x2 = list2[i2];
 		
-		for (int i3=0; i3<list3_len; i3++) {
-			//Check matches
+		for (int i3=0; i3<len3; i3++) {
 			int* x3 = list3[i3];
-			if (x3[0]!=x2[1] || x3[1]!=x2[2])
+			if (has_problem43_match(x2, x3))
 				continue;
 			
-			for (int i5=0; i5<list5_len; i5++) {
-				//Check matches
+			for (int i5=0; i5<len5; i5++) {
 				int* x5 = list5[i5];
-				if (x5[0]!=x3[1] || x5[1]!=x3[2])
+				if (has_problem43_match(x3, x5))
 					continue;
 				
-				for (int i7=0; i7<list7_len; i7++) {
-					//Check matches
+				for (int i7=0; i7<len7; i7++) {
 					int* x7 = list7[i7];
-					if (x7[0]!=x5[1] || x7[1]!=x5[2])
+					if (has_problem43_match(x5, x7))
 						continue;
 					
-					for (int i11=0; i11<list11_len; i11++) {
-						//Check matches
+					for (int i11=0; i11<len11; i11++) {
 						int* x11 = list11[i11];
-						if (x11[0]!=x7[1] || x11[1]!=x7[2])
+						if (has_problem43_match(x7, x11))
 							continue;
 						
-						for (int i13=0; i13<list13_len; i13++) {
-							//Check matches
+						for (int i13=0; i13<len13; i13++) {
 							int* x13 = list13[i13];
-							if (x13[0]!=x11[1] || x13[1]!=x11[2])
+							if (has_problem43_match(x11, x13))
 								continue;
 								
-							for (int i17=0; i17<list17_len; i17++) {
-								//Check matches
+							for (int i17=0; i17<len17; i17++) {
 								int* x17 = list17[i17];
-								if (x17[0]!=x13[1] || x17[1]!=x13[2])
+								if (has_problem43_match(x13, x17))
 									continue;
 								
 								/*
@@ -90,7 +80,7 @@ int main() {
 								 * pandigital sequence as shown in the
 								 * example
 								 */
-								int* pan = calloc(10, sizeof(int));
+								pand_t* pan = calloc(10, sizeof(int));
 								pan[1] = x2[0];
 								pan[2] = x2[1];
 								pan[3] = x2[2];
@@ -101,9 +91,9 @@ int main() {
 								pan[8] = x17[1];
 								pan[9] = x17[2];
 								
-								//Fill in the missing 1st digit
+								// Fill in the missing 1st digit
 								for (int i=0; i<10; i++) {
-									if (contains(pan, 10, i))
+									if (arr_bsearch(pan, 10, i))
 										continue;
 									else {
 										pan[0] = i;
@@ -115,28 +105,16 @@ int main() {
 								 * If any digits repeat, then this is
 								 * NOT a valid pandigital
 								 */
-								if (has_repeating_elements(pan, 10)) {
-									free(pan);
+								if (has_repeats(pan, 10)) {
+									pand_free(pan);
 									continue;
 								}
 								
-								//Print
-								for (int i=0; i<10; i++)
-									printf("%d", pan[i]);
-								printf("\n");
-								
-								//Convert pandigital into integer
-								int64_t i = 0;
-								int64_t m = 1000000000;
-								for (int j=0; j<10; j++) {
-									int digit = pan[j];
-									i += m*digit;
-									m = m/10;
-								}
-								
-								//Add to sum
-								sum += i;
-								free(pan);
+								// add to sum
+								pand_print(pan, 10);
+								int64_t x = pand_to_int(pan, 10);
+								sum += x;
+								pand_free(pan);
 							}
 						}
 					}
@@ -145,149 +123,119 @@ int main() {
 		}
 	}
 	
-	//Memory cleanup
-	free_problem43_list(list2, list2_len);
-	free_problem43_list(list3, list3_len);
-	free_problem43_list(list5, list5_len);
-	free_problem43_list(list7, list7_len);
-	free_problem43_list(list11, list11_len);
-	free_problem43_list(list13, list13_len);
-	free_problem43_list(list17, list17_len);
-	
-	//Print sum
+	// end
+	arr_free_full(list2, len2);
+	arr_free_full(list3, len3);
+	arr_free_full(list5, len5);
+	arr_free_full(list7, len7);
+	arr_free_full(list11, len11);
+	arr_free_full(list13, len13);
+	arr_free_full(list17, len17);
 	printf("sum: %lld \n", sum);
 	return 0;
 }
 
 
-
-/*
- * Returns true of the set has a repeating element
- */
-bool has_repeating_elements(int* set , int set_len) {
-	for (int i=0; i<set_len-1; i++)
-		for (int j=i+1; j<set_len; j++)
-			if (set[i]==set[j])
-				return true;
-	return false;
-}
-
-
-/*
- * Returns true if both sets have a common element
- */
-bool shares_element(int* list1, int list1_len, int* list2, int list2_len) {
-	for (int i=0; i<list1_len; i++)
-		for (int j=0; j<list2_len; j++)
-			if (list1[i]==list2[j])
-				return true;
-	return false;
-}
-
-
-/*
- * Generates a list of all 3-digit sequences whose integer forms are 
- * divisible by the given divisor
+/**
+ * Returns true if two 3-digit sequences can't be used to form a
+ * pandigital as described in the problem text.
  * 
- * Free the returned list with free_problem43_list()
+ * @param	seq1	the first sequence
+ * @param	seq2	the second sequence
+ * @return			true or false
  */
-int** make_problem43_list(int divisor, int* list_len) {
-	//Declare list for storing 3-digit arrays
+bool has_problem43_match(int* seq1, int* seq2) {
+	if (seq1[1] != seq2[0] || seq1[2] != seq2[1])
+		return true;
+	return false;
+}
+
+
+/**
+ * Returns true if an array has a repeating element.
+ * 
+ * @param	arr		the array to check
+ * @param	len		the array's length
+ * @return			true or false
+ */
+bool has_repeats(int* arr , int len) {
+	for (int i=0; i<len-1; i++)
+		for (int j=i+1; j<len; j++)
+			if (arr[i] == arr[j])
+				return true;
+	return false;
+}
+
+
+/**
+ * Returns true if two int arrays share a common element.
+ * 
+ * @param	arr1	the first array
+ * @param	len1	the first array's length
+ * @param	arr2	the second array
+ * @param	len2	the second array's length
+ * @return			true or false
+ */
+bool has_common_element(int* arr1, int len1, int* arr2, int len2) {
+	for (int i=0; i<len1; i++)
+		for (int j=0; j<len2; j++)
+			if (arr1[i]==arr2[j])
+				return true;
+	return false;
+}
+
+
+/**
+ * Creates an array of 3-digit sequences which are divisible by the given
+ * divisor. It should later be freed with arr_free_full().
+ * 
+ * @param	divisor		the number that every sequence will be divisible
+ * 						by
+ * @param	len_ptr		a pointer to an integer to take on the length of
+ * 						the output array
+ * @return				a heap-allocated array (of heap-allocated arrays)
+ */
+int** new_problem43_list(int divisor, int* len_ptr) {
 	int** list = NULL;
+	if (*len_ptr != 0)
+		*len_ptr = 0;
 	
 	for (int x=12; x<=999; x++) {
-		if (x%divisor==0) {
-			//Get digits
+		if (x%divisor == 0) {
+			// digits
 			int* digits = digits_of(x);
-			
-			//Get length
-			int len;
-			if (x<=99)
-				len = 2;
-			else
-				len = 3;
-			
-			//If any digits repeat, skip this x
-			if (has_repeating_elements(digits, len)) {
+			int len = digit_count(x);
+			if (has_repeats(digits, len)) {
 				free(digits);
 				continue;
 			}
 
-			//If x has 2 digits, prepend 0
-			if (len==2) {
-				digits = (int*) realloc(digits, sizeof(int)*3);
-				digits[2] = digits[1];
-				digits[1] = digits[0];
-				digits[0] = 0;
-			}
+			// prepend 0 if only 2 digits
+			if (len == 2)
+				digits = prepend_zero(digits);
 			
-			//Append x's digits to the list
-			list = (int**) realloc(list, sizeof(int*) * ((*list_len)+1));
-			list[*list_len] = digits;
-			(*list_len)++;
+			// append to list
+			size_t new_size = sizeof(int*) * (*len_ptr + 1);
+			list = realloc(list, new_size);
+			list[*len_ptr] = digits;
+			*len_ptr += 1;
 		}
 	}
-	
 	return list;
 }
 
 
-/*
- * Frees the memory returned by make_problem43_list()
+/**
+ * Prepends a zero to a 2-element array.
+ * 
+ * @param	arr		the array to modify
+ * @return			the array, after it has been modified
  */
-void free_problem43_list(int** list, int list_len) {
-	for (int i=0; i<list_len; i++)
-		free(list[i]);
-	free(list);
-}
-
-
-
-/*
- * Performs a linear search and returns whether x is in set
- */
-bool contains(int* set, int set_len, int x) {
-	for (int i=0; i<set_len; i++)
-		if (set[i]==x)
-			return true;
-	return false;
-}
-
-
-
-/*
- * Returns a slice of x's digits
- * e.g. digits_of(207) -> {2, 0, 7}
- */
-int* digits_of(int x) {
-	//If 'x' is one digit
-	if (x<=9) {
-		int* set = (int*) malloc(sizeof(int));
-		set[0] = x;
-		return set;
-	}
-	
-	//Find the largest power of 10 which is smaller than 'x'
-	int column = 10;
-	while (column*10 < x)
-		column *= 10;
-	
-	//Find every digit of 'x'
-	int* digits = NULL;
-	int digits_len = 0;
-	
-	while (column > 0) {
-		//Get the digit
-		int current = x/column - 10*(x/(column*10));
-		
-		//Append it to the list
-		digits = (int*) realloc(digits, sizeof(int) * (digits_len+1) );
-		digits[digits_len] = current;
-		digits_len++;
-		
-		//Go to next column
-		column /= 10;
-	}
-
-	return digits;
+int* prepend_zero(int* arr) {
+	size_t new_size = sizeof(int) * 3;
+	arr = realloc(arr, new_size);
+	arr[2] = arr[1];
+	arr[1] = arr[0];
+	arr[0] = 0;
+	return arr;
 }

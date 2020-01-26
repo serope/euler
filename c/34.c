@@ -1,76 +1,77 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 34
- **********************************************************************/
+/*
+ * Project Euler
+ * 34.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "euler.h"
+#include "array.h"
 
+int* make_problem34_dict();
+bool has_problem34_property(int x, int* dict);
 
 int main() {
-	/*******************************************************************
-	 * 1. Prepare the list
-	 ******************************************************************/
-	int* list = NULL;
-	int list_len = 0;
+	// init
+	int* arr = NULL;
+	int len = 0;
+	int limit = 99999;
+	int* dict = make_problem34_dict();
 	
-	
-	
-	/*******************************************************************
-	 * 2. For every 'x' from 3 to the limit, check if it's equal to the
-	 *    summed factorials of its digits
-	 * 
-	 *    If it is, then record it on the list
-	 ******************************************************************/
-	int limit = 999999;
-	
+	// solve
 	for (int x=3; x<=limit; x++) {
-		/***************************************************************
-		 * 2a. Create the list of digits of 'x'
-		 **************************************************************/
-		int* list_of_digits = digits_of(x);
-		int list_of_digits_len = digit_count(x);
-		
-		
-		/***************************************************************
-		 * 2b. Add every digit's factorial
-		 **************************************************************/
-		int sum = 0;
-		for (int l=0; l<list_of_digits_len; l++)
-			sum += factorial(list_of_digits[l]);
-		
-		
-		/***************************************************************
-		 * 2c. If 'x' and the sum are the same, put 'x' on the list
-		 **************************************************************/
-		if (x==sum) {
-			printf("%d! \n", x);
-			list = append(list, x, &list_len);
+		if (has_problem34_property(x, dict)) {
+			printf("%d \n", x); 
+			arr = arr_append(arr, x, &len);
 		}
-		
-		
-		/***************************************************************
-		 * 2d. Free the list and continue
-		 **************************************************************/
-		free(list_of_digits);
 	}
 	
-	
-	
-	
-	/*******************************************************************
-	 * 3. Sum every item on the list
-	 ******************************************************************/
-	int sum = 0;
-	for (int l=0; l<list_len; l++)
-		sum += list[l];
-		
-	
-	
-	/*******************************************************************
-	 * 4. Print, free memory, and exit
-	 ******************************************************************/
-	printf("result:    %d \n", sum);
-	free(list);
+	// end
+	int sum = arr_sum(arr, len);
+	printf("result: %d \n", sum);
+	free(arr);
+	free(dict);
 	return 0;
+}
+
+
+/**
+ * Generates an array in which each element is its index's factorial.
+ * 
+ * @return	a heap-allocated array
+ */
+int* make_problem34_dict() {
+	int* dict = calloc(10, sizeof(int));
+	dict[0] = factorial(0);
+	dict[1] = factorial(1);
+	dict[2] = factorial(2);
+	dict[3] = factorial(3);
+	dict[4] = factorial(4);
+	dict[5] = factorial(5);
+	dict[6] = factorial(6);
+	dict[7] = factorial(7);
+	dict[8] = factorial(8);
+	dict[9] = factorial(9);
+	return dict;
+}
+
+
+/**
+ * Returns true if x is equal to the sum of its digits' factorials.
+ * 
+ * @param	x		the term to test
+ * @param	dict	a map-esque array of factorials for every decimal
+ * 					digit
+ * @return			true or false
+ */
+bool has_problem34_property(int x, int* dict) {
+	int* digits = digits_of(x);
+	int digits_len = digit_count(x);
+	int sum = 0;
+	for (int i=0; i<digits_len; i++) {
+		sum += dict[digits[i]];
+		if (sum > x)
+			break;
+	}
+	free(digits);
+	return (sum == x);
 }

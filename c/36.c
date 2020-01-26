@@ -1,43 +1,66 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 36
- **********************************************************************/
+/*
+ * Project Euler
+ * 36.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
+#include "array.h"
 #include "euler.h"
-#include "euler_binary.h"
+#include "binary.h"
+
+bool has_problem36_property(int x);
+bool int_is_palindrome(int x);
+
 
 int main() {
-	int sum = 0;
+	// init
+	int lim = 1000000;
+	int* arr = NULL;
+	int len = 0;
 	
-	for (int x=1; x<=1000000; x++) {
-		/**********************************************************
-		 * 1. Check if 'x' is a palindrome
-		 *********************************************************/
-		if (!is_palindromic_int(x))
-			continue;
-			
-		/**********************************************************
-		 * 2. Check if the binary sequence of 'x' is a palindrome
-		 *********************************************************/
-		bool* bin = binary_sequence_of(x);
-		int bin_len = binary_sequence_count(x);
-		
-		if (!binary_sequence_is_palindrome(bin, bin_len)) {
-			free(bin);
-			continue;
-		}
-		
-		/**********************************************************
-		 * 3. If both are palindromes, add 'x' to the sum
-		 *********************************************************/
-		printf("%d \t", x);
-		binary_sequence_print(bin, bin_len);
-		
-		sum += x;
+	// find terms
+	for (int i=1; i<lim; i++)
+		if (has_problem36_property(i))
+			arr = arr_append(arr, i, &len);
+	
+	// end
+	arr_print(arr, len);
+	printf("sum %d \n", arr_sum(arr, len));
+	free(arr);
+	return 0;
+}
 
-		free(bin);
-	}
+
+/**
+ * Returns true if x is a palindrome in both base 10 and base 2.
+ * 
+ * @param	x	the term to check
+ * @return		true or false
+ */
+bool has_problem36_property(int x) {
+	// base 10
+	if (!int_is_palindrome(x))
+		return false;
 	
-	printf("\nsum \t %d \n", sum);
+	// base 2
+	int len;
+	bin_t* bin = bin_new(x, &len);
+	bool is_palindrome = arr_is_palindrome((int*) bin, len);
+	bin_free(bin);
+	return is_palindrome;
+}
+
+
+/**
+ * Returns true if x is a palindrome.
+ * 
+ * @param	x	the term to check
+ * @return		true or false
+ */
+bool int_is_palindrome(int x) {
+	int* arr = digits_of(x);
+	int len = digit_count(x);
+	bool is_palindrome = arr_is_palindrome(arr, len);
+	free(arr);
+	return is_palindrome;
 }

@@ -1,64 +1,68 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 8
- **********************************************************************/
+/*
+ * Project Euler
+ * 08.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "euler.h"
+#include "strings.h"
+
+
+int* file_to_arr(const char* filename, int* len_ptr);
+int64_t largest_product(int* arr, int len, int adjacency);
+
 
 int main() {
-	/*******************************************************************
-	 * 1. Load the text file
-	 ******************************************************************/
-	const char* filename = "08_bignum.txt";
-	FILE* txtfile = fopen(filename, "r");
-	if (!txtfile) {
-		printf("Unable to load %s \n", filename);
-		return 1;
-	}
+	int len;
+	int* digits = file_to_arr("08_digits", &len);
 	
-	/*******************************************************************
-	 * 2. Convert the contents of the file into an int array
-	 *    Note: 'current_char' should be an int due to the nature
-	 *          of getc() and EOF
-	 ******************************************************************/
-	int* digits = NULL;
-	int digits_len = 0;
-	int current_char;
+	int adjacency = 13;
+	int64_t largest = largest_product(digits, len, 13);
 	
-	while ((current_char=getc(txtfile)) != EOF) {
-		int current_digit = CHAR_TO_INT(current_char);
-		digits = append(digits, current_digit, &digits_len);
-	}
-	fclose(txtfile);
-	
-	/*******************************************************************
-	 * 3. Multiply every digit in every possible chunk of adjacent 
-	 *    numbers and remember the largest product
-	 ******************************************************************/
-	int chunk_size = 13;
+	free(digits);
+	print64(largest);
+	printf("\n");
+	return 0;
+}
+
+
+/**
+ * Reads a file containing digits into an array of digits and saves its
+ * length.
+ * 
+ * @param	filename	the digits file
+ * @param	len_ptr		a pointer to an integer representing the length
+ * 						of the output array
+ * @return				a heap-allocated array
+ */
+int* file_to_arr(const char* filename, int* len_ptr) {
+	char* text = file_to_string(filename, len_ptr);
+	int* digits = calloc(*len_ptr, sizeof(int));
+	for (int i=0; i < *len_ptr; i++)
+		digits[i] = char_to_int(text[i]);
+	free(text);
+	return digits;
+}
+
+
+/**
+ * Checks an array for the largest possible product formed by multiplying
+ * adjacent digits.
+ * 
+ * @param	arr			an int array
+ * @param	len			the array's length
+ * @param	adjacency	the amount of adjacent digits to multiply
+ * @return				the largest product
+ */
+int64_t largest_product(int* arr, int len, int adjacency) {
 	int64_t largest = 0;
-	
-	for (int i=0; i<(digits_len-chunk_size)-1; i++) {
-		/***************************************************************
-		 * Get the product of the current chunk
-		 **************************************************************/
+	for (int i=0; i<(len-adjacency)-1; i++) {
 		int64_t product = 1;
-		for (int j=0; j<chunk_size; j++)
-			product *= digits[i+j];
-		
-		
-		/***************************************************************
-		 * Compare it to the largest recorded product
-		 **************************************************************/
+		for (int j=0; j<adjacency; j++)
+			product *= arr[i+j];
 		if (product > largest)
 			largest = product;
 	}
-	
-	/*******************************************************************
-	 * 4. Print and exit
-	 ******************************************************************/
-	free(digits);
-	printf("%lld \n", largest);
-	return 0;
+	return largest;
 }

@@ -1,30 +1,24 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 64
- **********************************************************************/
+// Project Euler
+// 64.go
 package main
-import "fmt"
 
+import (
+	"fmt"
+	"./euler"
+)
 
 func main() {
-	totalOdds := 0
+	total := 0
 	n := 10000
-	
 	for i:=1; i<=n; i++ {
-		//Generate continued fraction sequence of 'i'
-		seq := getContinuedFraction(i)
-		
-		//Above func returns nil if 'i' is a perfect square
-		if seq==nil {
+		cf := euler.ContinuedFraction(i)
+		if cf == nil { // i was a perfect square
 			continue
 		}
-
-		//If len of sequence is odd, increment
-		if len(seq)%2 > 0 {
-			fmt.Printf("%d\t%d\n", i, len(seq))
-			totalOdds++
+		if len(cf)%2 != 0 {
+			fmt.Printf("%d \t %d \n", i, len(cf))
+			total++
 		}
 	}
-	
-	fmt.Println("totalOdds: ", totalOdds)
+	fmt.Println(total)
 }

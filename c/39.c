@@ -1,62 +1,54 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 39
- **********************************************************************/
+/*
+ * Project Euler
+ * 39.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "euler.h"
 
+int* make_problem39_dict(int limit);
+
 int main() {
-	/*
-	 * Prepare a list in which each index represents a perimeter 
-	 * and each value is a score representing how many Pythagorean
-	 * triplet solutions that perimeter has
-	 * 
-	 * Example: If the perimeter p=45 has 7 solutions, then
-	 *          perimeter_scores[45] = 7
-	 **/
+	// generate
 	int limit = 1000;
-	int* perimeter_scores = (int*) calloc(limit, sizeof(int));
+	int* dict = make_problem39_dict(limit);
 	
+	// find max pair
+	int key = 0;
+	int val = 0;
+	for (int i=0; i<limit; i++) {
+		if (dict[i] > val) {
+			key = i;
+			val = dict[i];
+		}
+	}
 	
-	/*
-	 * For every possible 'a', 'b', and 'c' between 1 and the
-	 * limit, if the three form a Pythagorean triplet, then find its
-	 * perimeter value, then increment that perimeter's score on
-	 * the list
-	 * 
-	 * Note: In a Pythagorean triplet, at least one term is
-	 *       divisible by 5
-	 */
+	// end
+	printf("p=%d has %d Pythagorean solutions \n", key, val);
+	free(dict);
+	return 0;
+}
+
+
+/**
+ * Creates an array in which each index is a perimeter and each value is
+ * the total Pythagorean triplet solutions for that perimeter.
+ * e.g. from problem text, dict[120] = 3
+ * Note: In a Pythagorean triplet, at least one term is divisibley by 5.
+ * 
+ * @param	limit	the limit go check up to
+ * @return			a heap-allocated array
+ */
+int* make_problem39_dict(int limit) {
+	int* dict = calloc(limit, sizeof(int));
 	for (int a=1; a<limit; a++) {
 		for (int b=a+1; b<limit; b++) {
 			for (int c=b+1; c<limit; c++) {
-				if ((a%5!=0) && (b%5!=0) && (c%5!=0))
-					continue;
-				
-				int perimeter = a+b+c;
-				
-				if (perimeter<limit && is_pythagorean_triplet(a, b, c))
-					perimeter_scores[perimeter]++;
+				int perim = a+b+c;
+				if (perim<limit && is_pythagorean_triplet(a, b, c))
+					dict[perim]++;
 			}
 		}
 	}
-	
-	
-	//Get highest score
-	int highest_score = 0;
-	int perimeter;
-	for (int p=0; p<limit; p++) {
-		if (perimeter_scores[p] > highest_score) {
-			highest_score = perimeter_scores[p];
-			perimeter = p;
-		}
-	}
-	
-	
-	//End
-	printf("The perimeter p=%d has %d Pythagorean solutions \n",
-											perimeter, highest_score);
-	free(perimeter_scores);
-	return 0;
+	return dict;
 }

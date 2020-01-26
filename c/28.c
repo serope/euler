@@ -1,12 +1,11 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 28
- **********************************************************************/
+/*
+ * Project Euler
+ * 28.c
+ */
 #include <stdio.h>
 
-
 int main() {
-	/*******************************************************************
+	/*
 	 * When a spiral of numbers is uncurled, it's merely a list of
 	 * numbers.
 	 * 
@@ -21,7 +20,7 @@ int main() {
 	 * 
 	 * Repeat the above process until 'x' is equal to the top-right
 	 * outermost corner of the 1001*1001 spiral.
-	 ******************************************************************/
+	 */
 	int x			= 1;
 	int sum			= 0;
 	int jump		= 2;
@@ -31,9 +30,7 @@ int main() {
 	while (x < limit) {
 		sum += x;
 		x += jump;
-		
 		jumps_made += 1;
-		
 		if (jumps_made==4) {
 			jumps_made = 0;
 			jump += 2;
@@ -42,6 +39,5 @@ int main() {
 	
 	sum += x;
 	printf("%d \n", sum);
-	
 	return 0;
 }

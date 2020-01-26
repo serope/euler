@@ -1,107 +1,78 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 62
- **********************************************************************/
+// Project Euler
+// 62.go
 package main
+
 import "fmt"
 
 func main() {
-	/* 
-	 * Create a list of cubes and a parallel list of 10-member arrays
-	 * in which each index represents a digit 0-9 and each value
-	 * counts how many times that digit appears in the associated cube.
-	 * 
-	 * Example:
-	 *     cubes[i]  = 405
-	 *     counts[i] = {1,0,0,0,1,1,0,0,0,0}
-	 */
-	cubes := make([]uint64, 0)
-	counts := make([][10]uint, 0)
+	// create two parallel slices:
+	// cubes	a slice containing cube terms from 1 to the limit
+	// counts	a slice containing 10-element arrays; each index
+	//			represents a digit and each value represents how many
+	//			times that digit appears in the corresponding cube
+	// e.g.		cubes[i] = 405
+	// 			counts[i] = {1,0,0,0,1,1,0,0,0,0}
+	var cubes []uint64
+	var counts [][10]int
 	var x uint64 = 405
 	var limit uint64 = 999999999999
 	var cube uint64
-	
 	for cube < limit {
-		//Compute x^3
-		cube := x*x*x
-		
-		//Count how many times each digit 0-9 appears in the cube
-		var count [10]uint
+		cube := x*x*x						// x^3
+		var count [10]int					// count digits
 		digits := digitsOf(cube)
 		for _, digit := range(digits) {
 			count[digit]++
 		}
-		
-		//Append the current cube and count
-		cubes = append(cubes, cube)
+		cubes = append(cubes, cube)			// append
 		counts = append(counts, count)
-		
-		//Increment
-		if cube > limit {
+		if cube > limit {					// end
 			break
 		}
-		x++
+		x++									// next
 	}
 	
-	//Find one which has 5 permutations
+	// which has 5 permutations?
 	for i, x := range(cubes) {
-		permutations := 1
+		perms := 1
 		for j, _ := range(cubes) {
-			if j<=i {
+			if j <= i {
 				continue
 			} else if equalArrays(counts[i], counts[j]) {
-				permutations++
+				perms++
 			}
 		}
-		
-		if permutations==5 {
-			fmt.Printf("%d has %d permutations \n", x, permutations)
+		if perms == 5 {
+			fmt.Printf("%d has %d perms \n", x, perms)
 			break
 		}
-		
-		//Remove x and its count
-		cubes = append(cubes[:0], cubes[1:]...)
+		cubes = append(cubes[:0], cubes[1:]...)		// remove
 		counts = append(counts[:0], counts[1:]...)
 	}
 }
 
-
-
-
-/*
- * This is the same as digitsOf() from euler.go but for uint64
- */
-func digitsOf(x uint64) []uint {
-	//If 'x' is one digit
+// digitsOf returns a slice of x's digits.
+func digitsOf(x uint64) []int {
 	if (x<=9) {
-		return []uint{uint(x)}
+		return []int{int(x)}
 	}
-	
-	//Find the largest power of 10 which is smaller than 'x'
-	var column uint64 = 10
-	for (column*10 < x) {
-		column *= 10
+	var div uint64 = 10
+	for (div*10 < x) {
+		div *= 10
 	}
-	
-	//Find every digit of 'x'
-	var digits []uint
-	for (column > 0) {
-		current := x/column - 10*(x/(column*10))
-		digits = append(digits, uint(current))
-		column /= 10
+	var digits []int
+	for (div > 0) {
+		current := x/div - 10*(x/(div*10))
+		digits = append(digits, int(current))
+		div /= 10
 	}
-
 	return digits
 }
 
-
-
-/*
- * Returns whether two 10-member arrays are equal
- */
-func equalArrays(a, b [10]uint) bool {
+// equalArrays returns true if two 10-element arrays are equal.
+func equalArrays(a, b [10]int) bool {
 	for i:=0; i<10; i++ {
-		if a[i]!=b[i] {
+		if a[i] != b[i] {
 			return false
 		}
 	}

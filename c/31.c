@@ -1,7 +1,8 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 31
- **********************************************************************/
+/*
+ * Project Euler
+ * 31.c
+ * TODO: Rewrite this using dynamic programming
+ */
 #include <stdio.h>
 
 int main() {

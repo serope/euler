@@ -1,47 +1,51 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 2
- **********************************************************************/
+/*
+ * Project Euler
+ * 02.c
+ */
 #include <stdio.h>
-#include <stdlib.h>
-#include "euler.h"
+#include "vector.h"
+
+vec_t* fibonacci(int n);
+
 
 int main() {
-	/*******************************************************************
-	 * 1. Initialize the set of Fibonacci numbers
-	 ******************************************************************/
-	int* fibonacci = calloc(2, sizeof(int));
-	int fibonacci_len = 2;
+	// generate Fibonacci sequence (40 is sufficient)
+	int n = 40;
+	vec_t* seq = fibonacci(n);
 	
-	fibonacci[0] = 1;
-	fibonacci[1] = 2;
-	
-	
-	/*******************************************************************
-	 * 2. Generate the Fibonacci numbers 
-	 *    If the current one is even, add it to the sum
-	 *    Break when the sum reaches 4,000,000
-	 ******************************************************************/
+	// sum until limit
+	int sum = 0;
 	int limit = 4000000;
-	int sum = 2;
-	
-	while (sum < limit) {
-		int index_a = fibonacci_len-2;
-		int index_b = fibonacci_len-1;
-		int current = fibonacci[index_a] + fibonacci[index_b];
-		
-		fibonacci = append(fibonacci, current, &fibonacci_len);
-		
-		if (IS_EVEN(current))
-			sum += current;
+	for (int i=0; i < seq->len; i++) {
+		int x = vec_get_int(seq, i);
+		if (x%2 == 0)
+			sum += x;
+		if (sum >= limit)
+			break;
 	}
 	
-	
-	/*******************************************************************
-	 * 3. Print, free memory, and exit
-	 ******************************************************************/
-	printf("sum              %d \n", sum);
-	printf("fibonacci_len    %d \n", fibonacci_len);
-	free(fibonacci);
+	// end
+	vec_print_ints(seq);
+	vec_destroy(seq, free);
+	printf("%d \n", sum);
 	return 0;
+}
+
+
+/**
+ * Generates the first n elements of the Fibonacci sequence.
+ * 
+ * @param 	n 	the amount of Fibonacci terms to generate
+ * @return 		the resulting sequence
+ */
+vec_t* fibonacci(int n) {
+	vec_t* seq = vec_new();				// initialize sequence {1 2}
+	seq = vec_append_int(seq, 1);
+	seq = vec_append_int(seq, 2);
+	for (int i=2; i<n; i++) {			// generate
+		int a = vec_get_int(seq, i-2);
+		int b = vec_get_int(seq, i-1);
+		seq = vec_append_int(seq, a+b);
+	}
+	return seq;
 }

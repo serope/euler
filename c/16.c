@@ -1,21 +1,18 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 16
- **********************************************************************/
+/*
+ * Project Euler
+ * 16.c
+ */
 #include <stdio.h>
-#include "euler_bignum.h"
+#include "big.h"
 
 int main() {
-	//Compute 2^1000
-	big x = big_new("2");
-	big_pow(x, 1000);
-
-	//Sum the digits
-	int sum = big_sum_of_digits(x);
+	big_t* x = big_new("2");
+	big_t* y = big_pow_ui(x, 1000);
 	
-	//End
-	big_print(x);
-	printf("%d \n", sum);
-	BIG_FREE(x);
+	big_print(y);
+	printf("%d \n", big_sum_of_digits(y));
+	
+	big_destroy(x);
+	big_destroy(y);
 	return 0;
 }

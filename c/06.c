@@ -1,24 +1,22 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 6
- **********************************************************************/
+/*
+ * Project Euler
+ * 06.c
+ */
 #include <stdio.h>
 
 int max = 100;
 
 int main() {
-	int sum_of_squares = 0;
-	for (int x=0; x<max+1; x++)
-		sum_of_squares += x*x;
+	int sum = 0;				// sum of squares
+	for (int x=1; x<=max; x++)
+		sum += x*x;
 	
-	int square_of_sum = 0;
-	for (int x=0; x<max+1; x++)
-		square_of_sum += x;
-	square_of_sum *= square_of_sum;
+	int square = 0;				// square of sum
+	for (int x=1; x<=max; x++)
+		square += x;
+	square *= square;
 	
-	int difference = square_of_sum - sum_of_squares;
-	
-	printf("%d \n", difference);
-	
+	int diff = square-sum;		// end
+	printf("%d \n", diff);
 	return 0;
 }

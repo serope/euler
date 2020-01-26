@@ -1,101 +1,66 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 65
- **********************************************************************/
+// Project Euler
+// 65.go
 package main
+
 import (
 	"fmt"
 	"math/big"
+	"./euler"
 )
 
-
-
 func main() {
-	//Generate first N terms of e's continued fraction
-	n := 100
-	k := 1
-	sequence := []*big.Int {big.NewInt(2)}
-	for len(sequence)<n {
-		sequence = append(sequence, []*big.Int {big.NewInt(1), big.NewInt(int64(2*k)), big.NewInt(1)} ...)
-		k++
-	}
+	// e's continued fraction
+	cf := continuedFractionE(100)
+	fmt.Println(cf)
 	
-	//If necessary, pop list until len=N
-	for len(sequence) != n {
-		last := len(sequence)-1
-		sequence = sequence[:last]
-	}
-	fmt.Println(sequence)
-	
-	//Generate 100th term of e's convergents
+	// generate 100th term of e's convergents
 	var top, bot *big.Int
-	printProgress := true
-	for i:=len(sequence)-1; i>=0; i-- {
-		//Print
-		if printProgress {
-			fmt.Printf("i=%d \t sequence[i] = %s \t %s / %s -> ", i, sequence[i].String(), top.String(), bot.String())
-		}
-		
-		//if 1st loop
-		if i==len(sequence)-1 {
+	for i:=len(cf)-1; i>=0; i-- {
+		fmt.Printf("i=%d \t cf[i] = %v \t %v / %v -> ", i, cf[i], top,
+																	bot)
+		// if 1st loop
+		if i==len(cf)-1 {
 			top = big.NewInt(1)
-			bot = sequence[i]
-			if printProgress {
-				fmt.Printf("%d / %d \n", top, bot)
-			}
+			bot = cf[i]
+			fmt.Printf("%d / %d \n", top, bot)
 			continue
 		}
 		
-		//fraction arithmetic
-		if sequence[i].Cmp(big.NewInt(1))==0 && top.Cmp(big.NewInt(1))==0 {
+		// fraction arithmetic
+		if cf[i].Cmp(big.NewInt(1))==0 && top.Cmp(big.NewInt(1))==0 {
 			top.Add(bot, big.NewInt(1))
 		} else {
-			//flip term
+			// flip
 			bot, top = top, bot
 			
-			//fraction addition
+			// add
 			product := big.NewInt(0)
-			product.Mul(bot, sequence[i])
+			product.Mul(bot, cf[i])
 			top.Add(top, product)
 		}
-		
-		//Print
-		if printProgress {
-			fmt.Printf("%s / %s \n", top.String(), bot.String())
-		}
+		fmt.Printf("%v / %v \n", top, bot)
 		
 	}
 	
-	//Print Nth term
-	fmt.Printf("%dth \t", n)
-	fmt.Printf("%s / %s \n", top.String(), bot.String())
-	
-	//Compute sum of numerator
-	sum := sumOfBigDigits(top)
-	fmt.Printf("sum \t%d \n", sum)
+	fmt.Printf("100th %v / %v \n", top, bot)
+	fmt.Printf("sum \t %d \n", euler.BigDigitSum(top))
 }
 
 
-
-
-
-/*
- * sumOfBigDigits()
- * 
- * Returns the sum of the digits of x
- */
-func sumOfBigDigits(x *big.Int) int {
-	//Convert digits to ints
-	digits := make([]int, 0)
-	for _, char := range(x.String()) {
-		digits = append(digits, int(char)-48)
+// continuedFractionE generates the first n terms of e's continued
+// fraction.
+func continuedFractionE(n int) []*big.Int {
+	k := 1
+	cf := []*big.Int {big.NewInt(2)}
+	for len(cf)<n {
+		cf = append(cf, []*big.Int {big.NewInt(1), 
+									big.NewInt(int64(2*k)),
+									big.NewInt(1)} ...)
+		k++
 	}
-	
-	//Compute sum
-	sum := 0
-	for _, digit := range(digits) {
-		sum += digit
+	for len(cf) != n { // shrink if over n
+		last := len(cf)-1
+		cf = cf[:last]
 	}
-	
-	return sum
+	return cf
 }

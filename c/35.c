@@ -1,101 +1,80 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 35
- **********************************************************************/
+/*
+ * Project Euler
+ * 35.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
+#include "array.h"
 #include "euler.h"
+#include "prime.h"
 
-#define TOTAL_ROTATIONS(x)	digit_count(x)
+
+int* rotations_of(int x);
+bool is_circular_prime(int x, int* primes, int primes_len);
+
 
 int main() {
-	/*******************************************************************
-	 * 1. Make a list of prime numbers from 1 to 1 million
-	 ******************************************************************/
-	int* primes = eratosthenes(1000000);
-	int primes_len = eratosthenes_count(1000000);
+	// sieve
+	int limit = 1000000;
+	int primes_len;
+	int* primes = eratosthenes(limit, &primes_len);
 	
-	
-	
-	/*******************************************************************
-	 * 2. With the exceptions of 2 and 5, remove all primes that
-	 *    contain 2, 4, 5, 6, 8 or 0
-	 *    
-	 *    Note: If a rotation can be even or divisible by 5, it won't
-	 *          satisfy the problem's requirement
-	 ******************************************************************/
-	for (int p=5; p<primes_len; p++) {
-		//Get digits
-		int* digits = digits_of(primes[p]);
-		int len = digit_count(primes[p]);
-		
-		/*
-		 * If it contains 2, 4, 5, 6, 8, or 0, remove it from
-		 * the list
-		 */
-		for (int d=0; d<len; d++) {
-			int digit = digits[d];
-			
-			if 	(digit==2 || digit==4 || digit==5 || digit==6 || digit==8 || digit==0) {
-				primes[p] = 0;
-				break;
-			}
-		}
-		free(digits);
-	}
-	
-	
-	
-	/*******************************************************************
-	 * 3. Begin searching the list for circular primes
-	 ******************************************************************/
-	int total_circular_primes = 0;
-	
-	for (int p=0; p<primes_len; p++) {
-		if (primes[p]>0) {
-			//Count how many rotations this prime has
-			int prime = primes[p];
-			int total_rotations = TOTAL_ROTATIONS(prime);
-			
-			//Get rotations
-			int* rotations = rotations_of(prime);
-			
-			//DEBUG: Print rotations
-			//printf("%d: \t", prime);
-			//for (int r=0; r<total_rotations; r++)
-				//printf("%d ", rotations[r]);
-			
-			//f every rotation is prime, add 1 to the total
-			bool every_rotation_is_prime = true;
-			
-			for (int r=0; r<total_rotations; r++)
-				if (!is_prime(rotations[r])) {
-					every_rotation_is_prime = false;
-					break;
-				}
-				
-			if (every_rotation_is_prime) {
-				//Print
-				printf("%d \t{", prime);
-				for (int r=0; r<total_rotations; r++)
-					printf("%d ", rotations[r]);
-				printf("\b} \n");
-				
-				//Increment
-				total_circular_primes += 1;
-			}
-			
-			free(rotations);
+	// count circular primes
+	int total = 0;
+	for (int i=0; i<primes_len; i++) {
+		if (is_circular_prime(primes[i], primes, primes_len)) {
+			printf("%d \n", primes[i]);
+			total++;
 		}
 	}
 	
-	
-	
-	/*******************************************************************
-	 * 4. End
-	 ******************************************************************/
-	printf("primes_len                  %d \n", primes_len);
-	printf("total_circular_primes       %d \n", total_circular_primes);
+	// end
+	printf("total %d \n", total);
 	free(primes);
 	return 0;
+}
+
+
+/**
+ * Generates x's rotations, excluding x itself. The output array's length
+ * is 1 less than x's total digits.
+ * 
+ * @param	x	the term to evaluate
+ * @return		a heap-allocated array
+ */
+int* rotations_of(int x) {
+	int* digits = digits_of(x);
+	int digits_len = digit_count(x);
+	int* rots = calloc(digits_len-1, sizeof(int));
+	for (int i=0; i<digits_len-1; i++) {
+		digits = arr_shift_left(digits, digits_len);
+		int rot = digits_to_int(digits, digits_len);
+		rots[i] = rot;
+	}
+	free(digits);
+	return rots;
+}
+
+
+/**
+ * Returns true if x is a circular prime as described in the problem
+ * text.
+ * 
+ * @param	x			the term to test
+ * @param	primes		an array of primes
+ * @param	primes_len	the array's length
+ * @return				true or false
+ */
+bool is_circular_prime(int x, int* primes, int primes_len) {
+	int* rots = rotations_of(x);
+	int rots_len = digit_count(x)-1;
+	int total_primes = 0;
+	for (int i=0; i<rots_len; i++) {
+		if (arr_bsearch(primes, primes_len, rots[i]))
+			total_primes++;
+		else
+			break;
+	}
+	free(rots);
+	return (total_primes == rots_len);
 }

@@ -1,72 +1,53 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 49
- **********************************************************************/
+/*
+ * Project Euler
+ * 49.c
+ */
 #include <stdlib.h>
 #include <stdio.h>
+#include "prime.h"
 #include "euler.h"
 
 bool has_problem49_property(int x, int y);
 
 int main() {
-	/*******************************************************************
-	 * 1. Create a list of primes from 1 to 9999
-	 ******************************************************************/
-	int* list = eratosthenes(9999);
-	int list_len = eratosthenes_count(9999);
+	// sieve up to 4 digits (1-9999)
+	int list_len;
+	int* list = eratosthenes(9999, &list_len);
 	
-	
-	/*******************************************************************
-	 * 2. Remove the 3 example terms (1487, 4817, 8147) and any term
-	 *    which does not have exactly 4 digits
-	 ******************************************************************/
-	for (int i=0; i<list_len; i++)
-		if (list[i]==1487 || list[i]==4817 || list[i]==8147 || list[i]<1000)
+	// remove non-4-digit terms, along with examples from problem text
+	for (int i=0; i<list_len; i++) {
+		int p = list[i];
+		if (p==1487 || p==4817 || p==8147 || p<1000)
 			list[i] = 0;
+	}
 			
-	
-	/*******************************************************************
-	 * 3. Find 3 terms that satisfy the problem's requirements
-	 ******************************************************************/
+	// solve
 	int answer1;
 	int answer2;
 	int answer3;
-	
-	//Find the 1st term
 	for (int i=0; i<list_len; i++) {
-		int term1 = list[i];
-		if (term1==0)
+		int x = list[i];
+		if (x == 0)
 			continue;
-			
-		//Find the 2nd term
 		for (int j=i+1; j<list_len; j++) {
-			int term2 = list[j];
-			if (term2==0)
+			int y = list[j];
+			if (y == 0 || !has_problem49_property(x, y))
 				continue;
-			
-			if (has_problem49_property(term1, term2)) {
-				//Find the 3rd term
-				for (int k=j+1; k<list_len; k++) {
-					int term3 = list[k];
-					if (term3==0)
-						continue;
-						
-					if (term3 != term1)
-						if (has_problem49_property(term2, term3)) {
-							answer1 = term1;
-							answer2 = term2;
-							answer3 = term3;
-							goto nested_break;
-						}
+			for (int k=j+1; k<list_len; k++) {
+				int z = list[k];
+				if (z == 0 || !has_problem49_property(y, z))
+					continue;
+				else {
+					answer1 = x;
+					answer2 = y;
+					answer3 = z;
+					goto nested_break;
 				}
 			}
 		}
 	}
 	
-	
-	/*******************************************************************
-	 * 4. Print, cleanup, and exit
-	 ******************************************************************/
+	// end
 	nested_break:
 	printf("%d %d %d \n", answer1, answer2, answer3);
 	free(list);
@@ -74,29 +55,33 @@ int main() {
 }
 
 
-
-
+/**
+ * Returns true if two given terms satisfy the requirements in the
+ * problem text.
+ * 
+ * @param	x	a 4-digit prime
+ * @param	y	a 4-digit prime
+ * @return		true or false
+ */
 bool has_problem49_property(int x, int y) {
-	//They must not be equal
-	if (x==y)
+	// can't be equal
+	if (x == y)
 		return false;
 		
-	//They must have 4 digits
-	if (x<1000 || x>9999 || y<1000 || y>9999)
+	// must have 4 digits
+	if (digit_count(x) != 4 || digit_count(y) != 4)
 		return false;
 	
-	//They must be permutations of one another
+	// must be permutations of one another
 	if (!is_permutation(x, y))
 		return false;
 		
-	//They must have a distance which is divisible by 3330
-	int distance = x-y;
-	if (IS_NEGATIVE(distance))
-		distance *= -1;
-	
-	if (NOT_DIVISIBLE(distance, 3330))
+	// must have a distance which is divisible by 3330
+	int d = x-y;
+	if (d < 0)
+		d *= -1;
+	if (d%3330 != 0)
 		return false;
-
 	return true;
 }
 

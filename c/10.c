@@ -1,31 +1,26 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 10
- **********************************************************************/
+/*
+ * Project Euler
+ * 10.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
-#include "euler.h"
+#include <inttypes.h>
+#include "prime.h"
 
 int main() {
-	/*******************************************************************
-	 * 1. Create a list of primes from 1 to 2 million
-	 ******************************************************************/
-	int* list = eratosthenes(2000000);
-	int list_len = eratosthenes_count(2000000);
+	// sieve
+	int limit = 2000000;
+	int* list = NULL;
+	int len = 0;
+	list = eratosthenes(limit, &len);
 	
-	
-	/*******************************************************************
-	 * 2. Add the primes
-	 ******************************************************************/
+	// sum
 	int64_t sum = 0;
-	for (int i=0; i<list_len; i++)
+	for (int i=0; i<len; i++)
 		sum += list[i];	
 			
-			
-	/*******************************************************************
-	 * 3. Print, cleanup, and exit
-	 ******************************************************************/
-	printf("%lld \n", sum);	
+	// end
 	free(list);
+	printf("%" PRId64 "\n", sum);	
 	return 0;
 }

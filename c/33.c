@@ -1,192 +1,85 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 33
- **********************************************************************/
+/*
+ * Project Euler
+ * 33.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define DIVISIBLE(x,y)		x%y==0
 
-struct fraction {
+typedef struct frac_s {
 	int top;
 	int bottom;
-};
+} frac_t;
 
-struct fraction fraction_reduced(struct fraction f);
-bool fractions_are_equal(struct fraction f1, struct fraction f2);
+frac_t frac_new(int top, int bottom);
+frac_t frac_reduce(frac_t f);
+frac_t frac_mul(frac_t f1, frac_t f2);
+bool frac_equal(frac_t f1, frac_t f2);
+bool frac_has_problem33_property(frac_t f);
+void frac_print(frac_t f);
 
 
 int main() {
-	/*******************************************************************
-	 * 1. Prepare the list of fractions
-	 ******************************************************************/
-	struct fraction* list = NULL;
-	int list_len = 0;
+	// init
+	frac_t* arr = NULL;
+	int arr_len = 0;
 	
-	
-	/*******************************************************************
-	 * 2. For every fraction that can be formed whose top and bottom go
-	 *    from 10 to 99...
-	 ******************************************************************/
+	// test every 2-digit fraction
 	for (int top=10; top<=99; top++) {
 		for (int bottom=top+1; bottom<=99; bottom++) {
-			/***********************************************************
-			 * 2a. If the top is a factor of 10, then skip this loop 
-			 *     because the problem considers this fraction a 
-			 *     trivial one that doesn't count
-			 **********************************************************/
-			if (DIVISIBLE(top, 10))
+			if (top%10 == 0)	// skip as suggested in problem text
 				continue;
-				
-				
-				
-			/***********************************************************
-			 * 2b. Get the digits of the current fraction, which is
-			 *     in the form top/bottom (or t/b)
-			 **********************************************************/
-			int t_1st = top/10;
-			int t_2nd = top - 10*t_1st;
-			
-			int b_1st = bottom/10;
-			int b_2nd = bottom - 10*b_1st;
-			
-			
-
-			/***********************************************************
-			 * 2c. If the same digit appears in the top and bottom, 
-			 *     remove it from the top and bottom, then check if
-			 *     this new fraction is equal to the old one
-			 * 
-			 *     If it is, add the new fraction to the list
-			 **********************************************************/
-			struct fraction old;
-			old.top = top;
-			old.bottom = bottom;
-			
-			
-			
-			/***********************************************************
-			 * Scenario A
-			 * The top 1st digit matches the bottom 1st digit
-			 **********************************************************/  
-			if (t_1st==b_1st) {
-				struct fraction new;
-				new.top = t_2nd;
-				new.bottom = b_2nd;
-				
-				if (fractions_are_equal(old, new)) {
-					printf("%d/%d -> %d/%d \n", top, bottom, t_2nd, b_2nd);
-					
-					list = (struct fraction*) realloc(list, sizeof(struct fraction)*(list_len+1) );
-					list[list_len] = new;
-					list_len += 1;
-				}
-			}
-			
-			
-			
-			/***********************************************************
-			 * Scenario B
-			 * The top 1st digit matches the bottom 2nd digit
-			 **********************************************************/  
-			if (t_1st==b_2nd) {
-				struct fraction new;
-				new.top = t_2nd;
-				new.bottom = b_1st;
-				
-				if (fractions_are_equal(old, new)) {
-					printf("%d/%d -> %d/%d \n", top, bottom, t_2nd, b_1st);
-					
-					list = (struct fraction*) realloc(list, sizeof(struct fraction)*(list_len+1) );
-					list[list_len] = new;
-					list_len += 1;
-				}
-			}
-			
-			
-			
-			/***********************************************************
-			 * Scenario C
-			 * The top 2nd digit matches the bottom 2nd digit
-			 **********************************************************/  
-			if (t_2nd==b_2nd) {
-				struct fraction new;
-				new.top = t_1st;
-				new.bottom = b_1st;
-				
-				if (fractions_are_equal(old, new)) {
-					printf("%d/%d -> %d/%d \n", top, bottom, t_1st, b_1st);
-					
-					list = (struct fraction*) realloc(list, sizeof(struct fraction)*(list_len+1) );
-					list[list_len] = new;
-					list_len += 1;
-				}
-			}
-			
-			
-				
-			/***********************************************************
-			 * Scenario D
-			 * The top 2nd digit matches the bottom 1st digit
-			 **********************************************************/  
-			if (t_2nd==b_1st) {
-				struct fraction new;
-				new.top = t_1st;
-				new.bottom = b_2nd;
-				
-				if (fractions_are_equal(old, new)) {
-					printf("%d/%d -> %d/%d \n", top, bottom, t_1st, b_2nd);
-					
-					list = (struct fraction*) realloc(list, sizeof(struct fraction)*(list_len+1) );
-					list[list_len] = new;
-					list_len += 1;
-				}
+			frac_t f = frac_new(top, bottom);
+			if (frac_has_problem33_property(f)) {
+				frac_print(f);
+				arr = realloc(arr, sizeof(frac_t) * (arr_len + 1));
+				arr[arr_len] = f;
+				arr_len++;
 			}
 		}
 	}
 	
-	
-	/*******************************************************************
-	 * 3. Compute and print the product of all items on the list
-	 ******************************************************************/
-	struct fraction product;
-	product.top = 1;
-	product.bottom = 1;
-	
-	for (int l=0; l<list_len; l++) {
-		product.top *= list[l].top;
-		product.bottom *= list[l].bottom;
+	// product
+	frac_t p = frac_new(1, 1);
+	for (int i=0; i<arr_len; i++) {
+		frac_t q = frac_mul(p, arr[i]);
+		p = q;
 	}
-	printf("\n");
-	printf("product:      %d/%d \n", product.top, product.bottom);
 	
-	
-	/*******************************************************************
-	 * 4. Reduce and print the product
-	 ******************************************************************/
-	product = fraction_reduced(product);
-	printf("reduced:      %d/%d \n", product.top, product.bottom);
-	
-	
-	
-	/*******************************************************************
-	 * 5. Free memory and exit
-	 ******************************************************************/
-	free(list);
+	// end
+	printf("%d \n", p.bottom);
+	free(arr);
 	return 0;
 }
 
 
+/**
+ * Creates a new fraction.
+ * 
+ * @param	top			numerator
+ * @param	bottom		denominator
+ * @return				a new fraction struct
+ */
+frac_t frac_new(int top, int bottom) {
+	frac_t f;
+	f.top = top;
+	f.bottom = bottom;
+	return f;
+}
 
 
-
-struct fraction fraction_reduced(struct fraction f) {
+/**
+ * Returns a new fraction which is f reduced.
+ * 
+ * @param	f		the fraction to reduce
+ * @return			a new fraction
+ */
+frac_t frac_reduce(frac_t f) {
 	int t = f.top;
 	int b = f.bottom;
 	int factor = 2;
-	
 	while (factor<=99) {
-		if (DIVISIBLE(t, factor) && DIVISIBLE(b, factor)) {
+		if ((t%factor==0) && (b%factor==0)) {
 			t = t/factor;
 			b = b/factor;
 			factor = 2;
@@ -194,24 +87,91 @@ struct fraction fraction_reduced(struct fraction f) {
 		else
 			factor += 1;
 	}
-	
-	struct fraction r;
-	r.top = t;
-	r.bottom = b;
-	
-	return r;
+	return frac_new(t, b);
 }
 
 
-
-
-
-bool fractions_are_equal(struct fraction f1, struct fraction f2) {
-	struct fraction r1 = fraction_reduced(f1);
-	struct fraction r2 = fraction_reduced(f2);
-	
+/**
+ * Returns true if both fractions reduce to equal values.
+ * 
+ * @param	f1		a fraction
+ * @param	f2		another fraction
+ * @return			true or false
+ */
+bool frac_equal(frac_t f1, frac_t f2) {
+	frac_t r1 = frac_reduce(f1);
+	frac_t r2 = frac_reduce(f2);
 	if (r1.top==r2.top && r1.bottom==r2.bottom)
 		return true;
-	
 	return false;
+}
+
+/**
+ * Returns a new, reduced fraction which is a product of two fractions.
+ * 
+ * @param	f1		a fraction
+ * @param	f2		another fraction
+ * @return			f1*f2
+ */
+frac_t frac_mul(frac_t f1, frac_t f2) {
+	frac_t prod = frac_new(f1.top*f2.top, f1.bottom*f2.bottom);
+	return frac_reduce(prod);
+}
+
+
+/**
+ * Returns true if the same digit exists in both the top and bottom and
+ * removing both instances of it results in a fraction that is
+ * is equal to the original.
+ * 
+ * @param	f		the fraction to test
+ * @return			true or false
+ */
+bool frac_has_problem33_property(frac_t f) {
+	// digits
+	int t_1st = f.top/10;
+	int t_2nd = f.top - 10*t_1st;
+	int b_1st = f.bottom/10;
+	int b_2nd = f.bottom - 10*b_1st;
+	
+	// reduce and compare
+	// scenario A: top 1st matches bottom 1st
+	if (t_1st==b_1st) {
+		frac_t g = frac_new(t_2nd, b_2nd);
+		if (frac_equal(f, g)) {
+			return true;
+		}
+	}
+	// scenario B: top 1st matches bottom 2nd
+	else if (t_1st==b_2nd) {
+		frac_t g = frac_new(t_2nd, b_1st);
+		if (frac_equal(f, g)) {
+			return true;
+		}
+	}
+	// scenario C: top 2nd matches bottom 2nd
+	else if (t_2nd==b_2nd) {
+		frac_t g = frac_new(t_1st, b_1st);;
+		if (frac_equal(f, g)) {
+			return true;
+		}
+	}
+	// scenario D: top 2nd matches bottom 1st
+	else if (t_2nd==b_1st) {
+		frac_t g = frac_new(t_1st, b_2nd);
+		if (frac_equal(f, g)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+/**
+ * Prints a fraction followed by a newline.
+ * 
+ * @param	f		the fraction to print
+ */
+void frac_print(frac_t f) {
+	printf("%d/%d \n", f.top, f.bottom);
 }

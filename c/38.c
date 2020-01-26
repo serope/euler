@@ -1,117 +1,86 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 38
- **********************************************************************/
+/*
+ * Project Euler
+ * 38.c
+ */
 #include <stdio.h>
 #include <stdlib.h>
+#include "array.h"
 #include "euler.h"
-#define _ 0
+#include "pandigital.h"
 
+bool has_problem38_property(int* arr, int arr_len);
+int* compute_products(int x, int* len_ptr);
 
 int main() {
-	int largest_pandigital	= 0;
-	int limit				= 10000;
-	int rows				= 9;
+	int lim = 9999;
+	int largest = 0;
 	
-	int multiply[9][9] = {
-		{1,_,_,_,_,_,_,_,_},
-		{1,2,_,_,_,_,_,_,_},
-		{1,2,3,_,_,_,_,_,_},
-		{1,2,3,4,_,_,_,_,_},
-		{1,2,3,4,5,_,_,_,_},
-		{1,2,3,4,5,6,_,_,_},
-		{1,2,3,4,5,6,7,_,_},
-		{1,2,3,4,5,6,7,8,_},
-		{1,2,3,4,5,6,7,8,9}
-	};
-	
-	
-	/*******************************************************************
-	 * Check every 'x' between 1 and the limit
-	 * (10,000 is sufficient for this problem)
-	 ******************************************************************/
-	for (int x=1; x<limit; x++)
-		for (int r=0; r<rows; r++) {
-			/***********************************************************
-			 * 1. Prepare a list of every product that will be formed
-			 *    with respect to the current row
-			 **********************************************************/
-			int list_len = r+1;
-			int* list = (int*) calloc(list_len, sizeof(int));
-			
-			
-			/***********************************************************
-			 * 2. Multiply 'x' by every term in the row
-			 *    Save each result on the list
-			 **********************************************************/
-			for (int c=0; c<list_len; c++)
-				if (multiply[r][c] != _)
-					list[c] = x*multiply[r][c];
-	
-				
-			/***********************************************************
-			 * 3. If the total digits among every item on the list
-			 *    isn't exactly 9, skip this 'x'
-			 **********************************************************/
-			int list_digit_count = 0;
-			
-			for (int l=0; l<list_len; l++)
-				list_digit_count += digit_count(list[l]);
-			
-			if (list_digit_count != 9) {
-				free(list);
-				continue;
-			}
-			
-			
-			/***********************************************************
-			 * 4. Concatenate all of the items on the list into one big
-			 *    number
-			 **********************************************************/
-			int number = 0;
-			int multiplier = 1;
-			
-			//For each item, going from backwards to forwards...
-			for (int i=list_len-1; i>=0; i--) {
-				//1. Get the item
-				int item = list[i];
-				
-				//2. Get the digits of the item
-				int* digits = digits_of(item);
-				int count = digit_count(item);
-				
-				//3. Put them into the big number
-				for (int d=count-1; d>=0; d--) {
-					number += digits[d]*multiplier;
-					multiplier *= 10;
-				}
-			}
-			
-			
-			/***********************************************************
-			 * 5. If the big number is pandigital 1 to 9, record it if
-			 *    it's the largest one so far
-			 **********************************************************/
-			if (is_pandigital_1_to_9(number))
-				if (number > largest_pandigital) {
-					//Print details
-					printf("%d \t %d \t {", number, x);
-					for (int c=0; c<rows; c++) {
-						if (multiply[r][c] == _)
-							printf("_ ");
-						else
-							printf("%d ", multiply[r][c]);
-						}
-					printf("\b} \n");
-					
-					//Replace largest
-					largest_pandigital = number;
-				}
-			
-			//Free list and continue
-			free(list);
+	for (int x=1; x<lim; x++) {
+		int len;
+		int* arr = compute_products(x, &len);
+		if (has_problem38_property(arr, len)) {
+			arr_print(arr, len);
+			int cat = arr_cat_elems(arr, len);
+			if (cat > largest)
+				largest = cat;
 		}
+		free(arr);
+	}
 	
-	printf("\nlargest: \t %d \n", largest_pandigital);
+	printf("%d \n", largest);
 	return 0;
+}
+
+
+/**
+ * Returns true if a series of products, as described in the problem
+ * text, are able to be concatenated into a 9-digit pandigital.
+ * 
+ * @param	arr			an array of products
+ * @param	arr_len		the array's length
+ * @return				true or false
+ */
+bool has_problem38_property(int* arr, int arr_len) {
+	if (!arr)	// compute_products() failed
+		return false;
+	int cat = arr_cat_elems(arr, arr_len);
+	bool result = false;
+	if (is_pand(cat))
+		result = true;
+	return result;
+}
+
+
+/**
+ * Computes a series of products x*1, x*2, ... x*n until the total digits
+ * in the series reaches 9. If the series exceeds 9 digits, null is
+ * returned.
+ * 
+ * @param	x			the base term
+ * @param	len_ptr		a pointer to an integer that will take on the
+ * 						output array's length
+ * @return				a heap-allocated array of products, or NULL
+ */
+int* compute_products(int x, int* len_ptr) {
+	// arr = {x}
+	int* arr = malloc(sizeof(int));
+	arr[0] = x;
+	*len_ptr = 1;
+	int total_digits = digit_count(x);
+	
+	// multiply x*2, x*3, ... x*n
+	int n = 2;
+	while (total_digits < 9) {
+		int prod = x*n;
+		total_digits += digit_count(prod);
+		arr = arr_append(arr, prod, len_ptr);
+		n++;
+	}
+	
+	// end
+	if (total_digits != 9) {
+		free(arr);
+		arr = NULL;
+	}
+	return arr;
 }

@@ -1,7 +1,5 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 58
- **********************************************************************/
+// Project Euler
+// 58.go
 package main
 
 import (
@@ -22,38 +20,31 @@ func main() {
 	goal		:= 10.0
 	
 	for ratio > goal {
-		//Increment
 		x.Add(x, big.NewInt(int64(jumpLen)))
 		jumps += 1
-		
-		/*
-		 * Perform Miller-Rabin primality test
-		 * 
-		 * TO DO: Implement a Miller-Rabin function which performs as
-		 *        well as ProbablyPrime() in math/big
-		 */
 		if x.ProbablyPrime(5) {
 			primes++
 		}
-		
-		//Compute ratio
-		ratio = 100.0*(float64(primes)/float64(jumpLen*2+1))
-		
-		//Increment jump len
+		ratio = computeRatio(primes, jumpLen)
 		if jumps==4 {
 			jumps = 0
 			jumpLen += 2
 			sideLen = jumpLen+1
 		}
-		
-		//Print
-		printLine++
+		printLine++ // print every 3000 jumps
 		if printLine==3000 {
-			fmt.Printf("x = %d \t primes = %d \t sideLen = %d \t ratio = %f \n", x, primes, sideLen, ratio)
+			fmt.Printf("x %d \t primes %d \t sideLen %d \t ratio %f \n",
+						x, primes, sideLen, ratio)
 			printLine = 0
 		}
 	}
 	
-	fmt.Printf("x = %d \t primes = %d \t sideLen = %d \t ratio = %f \n", x, primes, sideLen, ratio)
-	fmt.Println("Done!")
+	fmt.Printf("x %d \t primes %d \t sideLen %d \t ratio %f \n", 
+				x, primes, sideLen, ratio)
+}
+
+
+// computeRatio returns the primes-to-side-length ratio for problem 58.
+func computeRatio(primes, jumpLen int) float64 {
+	return 100.0*(float64(primes)/float64(jumpLen*2+1))
 }

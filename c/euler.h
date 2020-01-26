@@ -1,83 +1,141 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
+/*
+ * Project Euler
  * euler.h
  * 
- * Function prototypes
- **********************************************************************/
+ * General-purpose functions for various problems.
+ */
 #pragma once
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
-
-//Array functions
-int*		append(int* set, int x, int* len_ptr);
-int64_t*	append_int64(int64_t* set, int64_t x, int* len_ptr);
-int			min(int* set, int len);
-int64_t		min_int64(int64_t* set, int len);
-bool		contains(int* set, int target, int len);
-bool		contains_int64(int64_t* set, int64_t target, int len);
-void		print_set(int* set, int len);
-int*		insert(int* set, int x, int* len_ptr);
-int			product_of_list(int* list, int len);
-
-//Digit functions
-int*		digits_of(int x);
-int			digit_count(int x);
-int*		sorted_digits_of(int x);
-int			replace_digit(int x, int new_digit, int index);
-int			int_pow(int base, int exp); //used in digit functions
-
-//Factor/divisor functions
-int64_t*	odd_factors_of(int64_t x);
-int			odd_factor_count(int64_t x);
-int*	    factors_of(int x);
-int     	factor_count(int x);
-int*		proper_divisors_of(int x);
-int			proper_divisor_count(int x);
-int			sum_of_proper_divisors_of(int x);
-int			distinct_prime_factor_count(int x, int* primes, int primes_len);
-
-//Sequence functions
-int*		eratosthenes(int limit);
-int			eratosthenes_count(int limit);
-int			nth_triangular_number(int n);
-int64_t		nth_pentagonal_number_int64(int n);
-int64_t		nth_triangular_number_int64(int n);
-int64_t		nth_hexagonal_number_int64(int n);
-int			factorial(int x);
-int*		rotations_of(int x);
-int*		truncated_stages(int x);
-int			total_truncated_stages(int x);
+#include <inttypes.h>
+#include "array.h"
 
 
-//Pandigital functions
-int*		nth_permutation_of_pandigital(int n, int length);
-void		print_pandigital(int* pandigital, int len);
-
-//Property functions
-bool		is_prime(int x);
-bool		is_prime_int64(int64_t x);
-bool		is_palindromic_int(int x);
-bool		is_palindromic_array(int* x, int len);
-bool		is_pythagorean_triplet(int a, int b, int c);
-bool		is_abundant(int x);
-bool		is_pandigital_1_to_9(int64_t x);
-bool		is_permutation(int x, int y);
-bool		is_equal_array(int* set1, int len1, int* set2, int len2);
+/**
+ * Generates the first n triangular numbers.
+ * 
+ * @param	n	the amount of triangles to generate
+ * @return		a heap-allocated array of length n
+ */
+int* triangle_numbers(int n);
 
 
-//Macro functions
-#define		IS_EVEN(x)			x%2==0
-#define		IS_ODD(x)			x%2!=0
-#define		IS_DIVISIBLE(x,d)	x%d==0
-#define		IS_NEGATIVE(x)		x<0
-#define		NOT_DIVISIBLE(x,d)	x%d!=0
-#define		CHAR_TO_INT(c)		c-48
-#define		INT_TO_CHAR(d)		d+48
-#define		STRING_TO_INT(str)	atoi(str)
+/**
+ * Counts how many digits x has.
+ * 
+ * @param	x	the term to evaluate
+ * @return		x's total digits
+ */
+int digit_count(int x);
 
-//Misc. functions
-int64_t		string_to_int64(char* str);
-int         final_digit_of(int64_t x);
+
+/**
+ * Computes the factorial of x.
+ * 
+ * @param	x	the term in evaluate
+ * @return		x! = x * (x-1) * (x-2) * ...
+ */
+int factorial(int x);
+
+
+/**
+ * Returns an unordered array of x's digits. Use digit_count() to get
+ * its length.
+ * 
+ * @param	x	the term to evaluate
+ * @return		a heap-allocated array
+ */
+int* digits_of(int x);
+
+
+/**
+ * Returns x^y.
+ * 
+ * @param	x	the base
+ * @param	y	the exponent
+ * @return		x^y
+ */
+int int_pow(int x, int y);
+
+
+/**
+ * Forms an array of digits into an integer (make sure it fits!).
+ * 
+ * @param	arr		an array of digits
+ * @param	len		the array's length
+ * @return			an integer
+ */
+int digits_to_int(int* arr, int len);
+
+
+/**
+ * Prints a 64-bit integer (I keep forgetting what the printf() formatter
+ * is...).
+ * 
+ * @param	x	a 64-bit integer
+ */
+void print64(int64_t x);
+
+
+/**
+ * Creates a list of natural numbers from 1 to n.
+ * 
+ * @param	n	the number to generate up to
+ * @return		a heap-allocated array
+ */
+int* natural_numbers(int n);
+
+
+/**
+ * Checks if two integers are permutations of each other.
+ * 
+ * @param	x	the first term
+ * @param	y	the second term
+ * @return		true or false
+ */
+bool is_permutation(int x, int y);
+
+
+/**
+ * Returns true if a, b, and c form a Pythagorean triplet; that is, if
+ * a < b < c and a^2 + b^2 = c^2.
+ * 
+ * @param	a	the a term
+ * @param	b	the b term
+ * @param	c	the c term
+ * @param		true or false
+ */
+bool is_pythagorean_triplet(int a, int b, int c);
+
+
+/**
+ * Returns true if x is a palindrome.
+ * 
+ * @param	x	the term to check
+ * @return		true or false
+ */
+bool is_palindromic_int(int x);
+
+
+/**
+ * Computes the nth pentagonal number.
+ * 
+ * @param	n	the iteration to compute
+ * @return		a 64-bit pentagonal number
+ */
+int64_t nth_pentagonal_number(int n);
+
+
+/**
+ * Compares two integers. This is passed to qsort().
+ * 
+ * @param	a_ptr	a pointer to an integer
+ * @param	b_ptr	a pointer to an integer
+ * @return			positive if a>b
+ * 					negative if a<b
+ * 					zero if a==b
+ */
+static int __int_cmp(const void* a_ptr, const void* b_ptr);

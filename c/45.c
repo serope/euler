@@ -1,114 +1,55 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 45
- **********************************************************************/
+/*
+ * Project Euler
+ * 45.c
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "array.h"
+#include "euler.h"
 
-int64_t		nth_pentagonal_number(int n);
-int64_t		nth_hexagonal_number(int n);
-int			final_digit_of(int64_t x);
-bool		contains(int64_t* set, int64_t target, int len);
+
+int64_t* triangular_numbers(int n, int limit, int64_t t);
+int64_t* pentagonal_numbers(int n, int limit);
+int64_t* hexagonal_numbers(int n, int limit);
+int64_t nth_hexagonal_number(int n);
+int cmp64(const void* a_ptr, const void* b_ptr);
 
 
 int main() {
 	/*
-	 * Declare lists of triangular, pengatonal, and hexagonal numbers
-	 * (50k is sufficient for this problem)
+	 * Build lists of triangular, pengatonal, and hexagonal numbers that
+	 * start at n=286, n=166, and n=144, respectively
+	 * (100k is sufficient for this problem)
 	 */
-	int limit = 50000;
-	int64_t* tri_list = (int64_t*) calloc(limit, sizeof(int64_t));
-	int64_t* pen_list = (int64_t*) calloc(limit, sizeof(int64_t));
-	int64_t* hex_list = (int64_t*) calloc(limit, sizeof(int64_t));
+	int limit = 100000;
+	int64_t t = 40755;
+	int64_t* tri_list = triangular_numbers(286, limit, t);
+	int64_t* pen_list = pentagonal_numbers(166, limit);
+	int64_t* hex_list = hexagonal_numbers(144, limit);
 	
-	
-	/*
-	 * Build the lists
-	 * 
-	 * Note 1: As per the problem's description, the three lists may
-	 *         start at n=286, n=166, and n=144, respectively
-	 * 
-	 * Note 2: All triangular numbers after n=286 seem to end with
-	 *         either 0, 1, 3, 5, 6, or 8.
-	 *         All pentagonal numbers after n=166 seem to end with
-	 *         either 0, 1, 2, 5, 6, or 7.
-	 *         All hexagonal numbers after n=144 seem to end with
-	 *         either 0, 1, 3, 5, 6, or 8.
-	 *         Therefore, the final answer likely ends with either 
-	 *         0, 1, 3, 5, or 6.
-	 ******************************************************************/
-	int tri_index = 0;
-	int pen_index = 0;
-	int hex_index = 0;
-	
-	int tri_n = 286;
-	int pen_n = 166;
-	int hex_n = 144;
-	
-	//Triangular list
-	int64_t t	= 40755;
-	while (tri_index < limit) {
-		t += tri_n;
-		int d		= final_digit_of(t);
-		if (d==0 || d==1 || d==3 || d==5 || d==6) {
-			tri_list[tri_index] = t;
-			tri_index++;
-		}
-		tri_n++;
-	}
-	
-	//Pentagonal list
-	while (pen_index < limit) {
-		int64_t p	= nth_pentagonal_number(pen_n);
-		int d		= final_digit_of(p);
-		if (d==0 || d==1 || d==3 || d==5 || d==6) {
-			pen_list[pen_index] = p;
-			pen_index++;
-		}
-		pen_n++;
-	}
-	
-	//Hexagonal list
-	while (hex_index < limit) {
-		int64_t h	= nth_hexagonal_number(hex_n);
-		int d		= final_digit_of(h);
-		if (d==0 || d==1 || d==3 || d==5 || d==6) {
-			hex_list[hex_index] = h;
-			hex_index++;
-		}
-		hex_n++;
-	}
-	
-	
-
-	//Search for a common number among all three lists
+	// search for a common number among all three lists
 	int64_t number;
 	bool solved = false;
-	
 	for (int t=0; t<limit; t++) {
 		number = tri_list[t];
-		if (contains(pen_list, number, limit)) {
-			if (contains(hex_list, number, limit)) {
+		if (arr_bsearch64(pen_list, limit, number)) {
+			if (arr_bsearch64(hex_list, limit, number)) {
 				solved = true;
 				break;
 			}
 		}
 	}
 	
-	
-	//Print
+	// end
+	printf("largest triangle:  "); print64(tri_list[limit-1]); printf("\n");
+	printf("largest pentagon:  "); print64(pen_list[limit-1]); printf("\n");
+	printf("largest hexagon:   "); print64(hex_list[limit-1]); printf("\n");
 	if (solved)
-		printf("%lld \n", number);
-	else {
-		printf("Didn't find the answer. Try inreasing the limit. \n");
-		printf("tri_list[%d] \t %lld \n", limit-1, tri_list[limit-1]);
-		printf("pen_list[%d] \t %lld \n", limit-1, pen_list[limit-1]);
-		printf("hex_list[%d] \t %lld \n", limit-1, hex_list[limit-1]);
-	}
-	
-	//Free
+		print64(number);
+	else
+		puts("The answer wasn't found (try increasing the limit)");
 	free(tri_list);
 	free(pen_list);
 	free(hex_list);
@@ -116,79 +57,97 @@ int main() {
 }
 
 
-
-
-
-/*
- * Returns the final digit of x
+/**
+ * Generates a list of triangular numbers, starting with the nth
+ * triangular number.
+ * 
+ * @param	n		the iteration to start at
+ * @param	limit	the iteration to generate up to
+ * @param	t		the nth triangular number
+ * @return			a heap-allocated array of length limit
  */
-int final_digit_of(int64_t x) {
-	if (x<=9)
-		return x;
-	for (int d=0; d<=9; d++)
-		if ( (x-d)%10==0 )
-			return d;
-	return -1;
+int64_t* triangular_numbers(int n, int limit, int64_t t) {
+	int64_t* arr = calloc(limit, sizeof(int64_t));
+	int i = 0;
+	while (i < limit) {
+		t += n;
+		arr[i] = t;
+		i++;
+		n++;
+	}
+	return arr;
 }
 
 
-
-/*
- * Returns the nth pentagonal number as an int64
+/**
+ * Generates a list of pentagonal numbers, starting with the nth
+ * pentagonal number.
+ * 
+ * @param	n		the iteration to start at
+ * @param	limit	the iteration to generate up to
+ * @return			a heap-allocated array of length limit
  */
-int64_t nth_pentagonal_number(int n) {
-	int64_t p = n;
-	p = p*(3*n-1);
-	p = p/2;
-	return p;
+int64_t* pentagonal_numbers(int n, int limit) {
+	int64_t* arr = calloc(limit, sizeof(int64_t));
+	int i = 0;
+	while (i < limit) {
+		int64_t p = nth_pentagonal_number(n);
+		arr[i] = p;
+		i++;
+		n++;
+	}
+	return arr;
 }
 
 
-/*
- * Returns the nth hexagonal number as an int64
+/**
+ * Generates a list of hexagonal numbers, starting with the nth
+ * hexagonal number.
+ * 
+ * @param	n		the iteration to start at
+ * @param	limit	the iteration to generate up to
+ * @return			a heap-allocated array of length limit
+ */
+int64_t* hexagonal_numbers(int n, int limit) {
+	int64_t* arr = calloc(limit, sizeof(int64_t));
+	int i = 0;
+	while (i < limit) {
+		int64_t h = nth_hexagonal_number(n);
+		arr[i] = h;
+		i++;
+		n++;
+	}
+	return arr;
+}
+
+
+/**
+ * Compares two 64-bit integers.
+ * 
+ * @param	a_ptr	a pointer to the first term
+ * @param	b_ptr	a pointer to the second term
+ * @return			1 if a>b
+ * 					-1 if a<b
+ * 					0 if a==b
+ */
+int cmp64(const void* a_ptr, const void* b_ptr) {
+	int64_t a = *((int64_t*) a_ptr);
+	int64_t b = *((int64_t*) b_ptr);
+	if (a > b)
+		return 1;
+	else if (a < b)
+		return -1;
+	return 0;
+}
+
+
+/**
+ * Computes the nth hexagonal number.
+ * 
+ * @param	n	the iteration to compute
+ * @return		a 64-bit hexagonal number
  */
 int64_t nth_hexagonal_number(int n) {
 	int64_t h = 2*n-1;
 	return h*n;
-}
-
-
-
-
-/*
- * Performs a binary search and returns whether target is in set
- */
-bool contains(int64_t* set, int64_t target, int len) {
-	//1. Return false if the list is empty
-	if (set==NULL || len==0)
-		return false;
-		
-	//2. Set the borders and halfway point for the binary search
-	int left = 0;
-	int right = len-1;
-	int halfway = len/2;
-	
-	//3. Return if the target is the first or last item
-	if (set[left]==target || set[right]==target)
-		return true;
-	
-	//4. Otherwise, proceed with the binary search
-	while (true) {
-		if (target < set[halfway])
-			right = halfway;
-		
-		else if (target > set[halfway])
-			left = halfway;
-		
-		else if (target==set[halfway])
-			return true;
-		
-		halfway = (right-left)/2 + left;
-		
-		if (halfway==left || halfway==right)
-			break;
-	}
-	
-	//5. Return false if the target wasn't found
-	return false;
 }

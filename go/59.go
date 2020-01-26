@@ -1,160 +1,150 @@
-/***********************************************************************
- * Project Euler (https://serope.com/github/euler.html)
- * Problem 59
- **********************************************************************/
 package main
 
 import (
 	"fmt"
-	"sync"
 	"strings"
 	"strconv"
 	"io/ioutil"
+	"./euler/base2"
 )
 
-
 func main() {
-	//Load text file
-	file, err := ioutil.ReadFile("59_message.txt")
+	// read file into base 2
+	bins, err := readMessageFile("59_message")
 	if err!=nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 	
-	//Split by commas
-	sep := strings.Split(string(file), ",")
-	
-	//Convert to integer slice
-	var messageOrig []int
-	for _, symbol := range(sep) {
-		integer, err := strconv.Atoi(symbol)
-		if err!=nil {
-			fmt.Println(err)
-			return
-		} else {
-			messageOrig = append(messageOrig, integer)
-		}
-	}
-	
-	
-	/*
-	 * Generate a list of every cipher combination that can be formed
-	 * using three lowercase characters.
-	 * 
-	 * Every lowercase character has an 8-bit ASCII code.
-	 * Therefore, the list holds 3-element slices of 8-element booleans.
-	 * 
-	 * The total amount of combinations is 26^3 = 17576.
-	 */
-	combos := make([][][]bool, 17576)
-	index := 0
+	// check every possible 3-lowercase-character cipher
+	var answer string
+	solved := false
 	for i:='a'; i<='z'; i++ {
 		for j:='a'; j<='z'; j++ {
 			for k:='a'; k<='z'; k++ {
-				combo := [][]bool {binarySeq(int(i)), binarySeq(int(j)), binarySeq(int(k))}
-				combos[index] = combo
-				index++
+				x := base2.New(int(i), 0)
+				y := base2.New(int(j), 0)
+				z := base2.New(int(k), 0)
+				cipher := []base2.Base2{x, y, z}
+				str := decode(cipher, bins)
+				if hasProblem59Property(str) {
+					answer = str
+					solved = true
+					break
+				}
+			}
+			if solved {
+				break
 			}
 		}
-	}
-	
-	//Solve the problem
-	var wait sync.WaitGroup
-	for _, combo := range(combos) {
-		wait.Add(1)
-		go solve(messageOrig, combo, &wait)
-	}
-	
-	//Wait for each goroutine to finish
-	wait.Wait()
-}
-
-
-
-
-func solve(messageOrig []int, combo [][]bool, wait *sync.WaitGroup) {
-	i := 0
-	var messageCiphered []byte
-	
-	for _, integer := range(messageOrig) {
-		//Convert to a binary
-		binary := binarySeq(integer)
-		
-		//XOR the binary with the current cipher combo
-		xord := xor(binary, combo[i])
-		
-		//Increment selected element of combo
-		i++
-		if i==3 {
-			i = 0
-		}
-		
-		//Convert back to integer (ASCII code)
-		ascii := binToInt(xord)
-		
-		//Append to messageCiphered
-		messageCiphered = append(messageCiphered, byte(ascii))
-	}
-	
-	//Check if the ciphered message contains common words
-	words := []string {"the ", "is ", "are "}
-	found := 0
-	for _, word := range(words) {
-		if strings.Contains(string(messageCiphered), word) {
-			found++
-		} else {
+		if solved {
 			break
 		}
 	}
 	
-	//End
-	if found==len(words) {
-		sum := 0
-		for _, ascii := range(messageCiphered) {
-			sum += int(ascii)
-		}
-		fmt.Println(string(messageCiphered))
-		fmt.Println("Sum: ", sum)
-	}
-	wait.Done()
+	// end
+	fmt.Println(answer)
+	fmt.Println(asciiSum(answer))
 }
 
 
+// asciiSum returns the sum of each character's ASCII value.
+func asciiSum(str string) int {
+	sum := 0
+	for _, b := range(str) {
+		sum += int(b)
+	}
+	return sum
+}
 
 
-func xor(sequence []bool, key []bool) []bool {
-	//Prepare a copy of the input slice
-	var seq []bool
+// decode applies a cipher to a message and returns the resulting decoded
+// string.
+func decode(cipher, message []base2.Base2) string {
+	// copy
+	ciphered := make([]base2.Base2, len(message))
+	copy(ciphered, message)
 	
-	//If the sequence and key are equal in length, copy the sequence
-	if len(sequence)==len(key) {
-		seq = make([]bool, len(sequence))
-		copy(seq, sequence)
-	} else if len(key)>len(sequence) {
-		//Expand the sequence as needed
-		dif := len(key)-len(sequence)
-		for i:=0; i<dif; i++ {
-			seq = append(seq, false)
-		}
-		for _, bit := range(sequence) {
-			seq = append(seq, bit)
+	// XOR
+	j := 0 // cipher index
+	for i, b := range(ciphered) {
+		ciphered[i] = b.Xor(cipher[j])
+		j++
+		if j == len(cipher) {
+			j = 0
 		}
 	}
 	
-	/* Apply the XOR cipher
-	 * 1 xor 1 = 0
-	 * 1 xor 0 = 1
-	 * 0 xor 1 = 1
-	 * 0 xor 0 = 0
-	 */
-	for i:=0; i<len(key); i++ {
-		//1 xor 1
-		if seq[i] && key[i] {
-			seq[i] = false
-		//1 xor 0, 0 xor 1
-		} else if seq[i]!=key[i] {
-			seq[i] = true
+	// convert back to string
+	var str []byte
+	for _, b := range(ciphered) {
+		str = append(str, b.Byte())
+	}
+	return string(str)
+}
+
+
+// hasProblem59Property returns true if a string contains some common
+// English words.
+func hasProblem59Property(str string) bool {
+	words := []string{"the ", "for ", "is ", "are "}
+	found := 0
+	for _, word := range(words) {
+		if strings.Contains(string(str), word) {
+			found++
+			if found == len(words) {
+				return true
+			}
 		}
 	}
-	return seq
-} 
+	return false
+}
+
+
+// readMessageFile reads the ciphered message into a slice of base 2
+// sequences.
+func readMessageFile(filename string) ([]base2.Base2, error) {
+	// read
+	file, err := ioutil.ReadFile(filename)
+	if err!=nil {
+		return nil, err
+	}
+	strs := strings.Split(string(file), ",")
+	
+	// convert to ints
+	nums, err := atois(strs)
+	if err!=nil {
+		return nil, err
+	}
+	
+	// return as base2s
+	return intsToBins(nums), nil
+}
+
+
+// atois takes a slice of stringed ints and returns a slice of ints.
+func atois(strs []string) ([]int, error) {
+	nums := make([]int, len(strs))
+	i := 0
+	for _, str := range(strs) {
+		x, err := strconv.Atoi(str)
+		if err!=nil {
+			return nil, err
+		}
+		nums[i] = x
+		i++
+	}
+	return nums, nil
+}
+
+
+// intsToBins takes a slice of integers and returns a slice of each
+// element's binary sequence.
+func intsToBins(a []int) []base2.Base2 {
+	bins := make([]base2.Base2, len(a))
+	i := 0
+	for _, n := range(a) {
+		bins[i] = base2.New(n, 0)
+		i++
+	}
+	return bins
+}
