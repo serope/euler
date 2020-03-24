@@ -1,9 +1,0 @@
-progress
-
-Progress table generator for Project Euler.
-
-Rules:
--	Solution files must be in the form "##.x", where ## is a two-digit
-	problem number and x is the directory where the solution resides.
--	Directories containing solutions are specified in main.go.
--	Different languages' build commands are specified in solution.go.
