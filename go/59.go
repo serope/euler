@@ -1,3 +1,5 @@
+// Project Euler
+// 59.go
 package main
 
 import (
@@ -9,15 +11,24 @@ import (
 )
 
 func main() {
-	// read file into base 2
 	bins, err := readMessageFile("59_message")
 	if err!=nil {
 		panic(err)
 	}
-	
-	// check every possible 3-lowercase-character cipher
+	message := solve(bins)
+	if message == "" {
+		fmt.Println("Failed")
+		return
+	}
+	fmt.Println(message)
+	sum := asciiSum(message)
+	fmt.Println(sum)
+}
+
+// solve takes the message as a base 2 sequence and returns the decoded message,
+// or an empty string if the decoding failed.
+func solve(bins []base2.Base2) string {
 	var answer string
-	solved := false
 	for i:='a'; i<='z'; i++ {
 		for j:='a'; j<='z'; j++ {
 			for k:='a'; k<='z'; k++ {
@@ -28,24 +39,14 @@ func main() {
 				str := decode(cipher, bins)
 				if hasProblem59Property(str) {
 					answer = str
-					solved = true
-					break
+					goto end
 				}
 			}
-			if solved {
-				break
-			}
-		}
-		if solved {
-			break
 		}
 	}
-	
-	// end
-	fmt.Println(answer)
-	fmt.Println(asciiSum(answer))
+	end:
+	return answer
 }
-
 
 // asciiSum returns the sum of each character's ASCII value.
 func asciiSum(str string) int {

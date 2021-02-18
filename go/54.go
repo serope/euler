@@ -14,7 +14,8 @@ const (
 	K = 13
 	Q = 12
 	J = 11
-	// hand types, in descending order of strength
+	
+	// hand types in descending order of strength
 	ROYALFLUSH = iota*-1
 	STRAIGHTFLUSH
 	QUADS
@@ -25,6 +26,7 @@ const (
 	TWOPAIR
 	ONEPAIR
 	HIGHCARD
+	
 	// suits
 	C
 	D
@@ -285,41 +287,42 @@ func (h Hand) eval() (int, Card) {
 	var handType int
 	var highest Card
 	
-	if h.isRoyalFlush() {
-		handType = ROYALFLUSH
-		highest = h[4]
-	} else if h.isStraightFlush() {
-		handType = STRAIGHTFLUSH
-		highest = h[4]
-	} else if h.isQuads() {
-		handType = QUADS
-		highest = h[2]
-	} else if h.isFullHouse() {
-		handType = FULLHOUSE
-		highest = h[2]
-	} else if h.isFlush() {
-		handType = FLUSH
-		highest = h[4]
-	} else if h.isStraight() {
-		handType = STRAIGHT
-		highest = h[4]
-	} else if h.isTrips() {
-		handType = TRIPS
-		highest = h[2]
-	} else if h.isTwoPair() {
-		handType = TWOPAIR
-		highest = h[3]
-	} else if h.isOnePair() {
-		handType = ONEPAIR
-		for i:=0; i<len(h)-1; i++ {
-			if h[i].rank == h[i+1].rank {
-				highest = h[i]
-				break
+	switch {
+		case h.isRoyalFlush():
+			handType = ROYALFLUSH
+			highest = h[4]
+		case h.isStraightFlush():
+			handType = STRAIGHTFLUSH
+			highest = h[4]
+		case h.isQuads():
+			handType = QUADS
+			highest = h[2]
+		case h.isFullHouse():
+			handType = FULLHOUSE
+			highest = h[2]
+		case h.isFlush():
+			handType = FLUSH
+			highest = h[4]
+		case h.isStraight():
+			handType = STRAIGHT
+			highest = h[4]
+		case h.isTrips():
+			handType = TRIPS
+			highest = h[2]
+		case h.isTwoPair():
+			handType = TWOPAIR
+			highest = h[3]
+		case h.isOnePair():
+			handType = ONEPAIR
+			for i:=0; i<len(h)-1; i++ {
+				if h[i].rank == h[i+1].rank {
+					highest = h[i]
+					break
+				}
 			}
-		}
-	} else {
-		handType = HIGHCARD
-		highest = max(h)
+		default:
+			handType = HIGHCARD
+			highest = max(h)
 	}
 	return handType, highest
 }
